@@ -16,6 +16,8 @@
 package com.epam.drill.plugins.test2code.storage
 
 import com.epam.drill.plugins.test2code.*
+import com.epam.drill.plugins.test2code.api.*
+import com.epam.drill.plugins.test2code.common.api.*
 import com.epam.drill.plugins.test2code.util.*
 import com.epam.kodux.*
 import kotlinx.serialization.*
@@ -38,7 +40,19 @@ internal suspend fun StoreClient.storeSession(
     scopeId: String,
     session: FinishedSession
 ) {
-    val data = ProtoBuf.dump(FinishedSession.serializer(), session)
+    val size =  session.probes.size / 10
+    println("ProtoBuf $size")
+    printMemory()
+    println(session.probes.size)
+    val data = ProtoBuf.dump(
+        FinishedSession.serializer(),
+        session
+    )
+    /*
+        FinishedSession.serializer(),
+        session.copy(probes = session.probes.chunked(size).first())
+     */
+    printMemory()
     store(
         StoredSession(
             id = session.id,
@@ -48,8 +62,46 @@ internal suspend fun StoreClient.storeSession(
     )
 }
 
+ fun printMemory() {
+    val mb = 1024 * 1024
+
+    val runtime = Runtime.getRuntime()
+
+    val total = runtime.totalMemory()
+    val freeMemory = runtime.freeMemory()
+
+    println("Used memory " + (total - freeMemory) / mb)
+    println("Free memory " + freeMemory / mb)
+    println("Total memory " + total / mb)
+    /** when takeMemory=100, then total~433
+     *  when takeMemory=500, then total~900
+     */
+    /** when takeMemory=100, then total~433
+     * when takeMemory=500, then total~900
+     */
+    println("Max memory " + runtime.maxMemory() / mb)
+}
+
 internal suspend fun StoreClient.deleteSessions(
     scopeId: String
 ) = deleteBy<StoredSession> {
     StoredSession::scopeId eq scopeId
 }
+
+@Serializable
+data class SessionSerializableProbs(
+    val id: String,
+    val testType: String,
+    val tests: Set<TypedTest>,
+    val testStats: Map<TypedTest, TestStats> = emptyMap(),
+    val probes: List<ByteArray>
+)
+
+fun FinishedSession.toSessionSerializableProbs(size:Int) =
+    SessionSerializableProbs(
+        id = id,
+        testType = testType,
+        tests = tests,
+        testStats = testStats,
+        probes = probes.chunked(size).map { ProtoBuf.dump(it) }
+    )
