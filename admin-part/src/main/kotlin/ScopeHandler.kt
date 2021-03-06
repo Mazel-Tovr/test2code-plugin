@@ -20,6 +20,7 @@ import com.epam.drill.plugins.test2code.api.*
 import com.epam.drill.plugins.test2code.api.routes.*
 import com.epam.drill.plugins.test2code.common.api.*
 import com.epam.drill.plugins.test2code.storage.*
+import kotlin.time.*
 
 internal fun Plugin.initActiveScope(): Boolean = activeScope.init { sendSessions, sessions ->
     if (sendSessions) {
@@ -27,8 +28,9 @@ internal fun Plugin.initActiveScope(): Boolean = activeScope.init { sendSessions
     }
     sessions?.let {
         val context = state.coverContext()
-        val bundleCounters = sessions.calcBundleCounters(context, activeScope.bundlesByTestsCache)
-        val coverageInfoSet = bundleCounters.calculateCoverageData(context, this)
+
+        val bundleCounters = measureTimedValue { sessions.calcBundleCounters(context, activeScope.bundlesByTestsCache) }.apply { println("[@@@@] bundleCounters time ${duration.inSeconds}") }.value
+        val coverageInfoSet = measureTimedValue { bundleCounters.calculateCoverageData(context, this) }.apply { println("[@@@@] coverageInfoSet time ${duration.inSeconds}") }.value
         updateSummary { it.copy(coverage = coverageInfoSet.coverage as ScopeCoverage) }
         sendActiveScope()
         coverageInfoSet.sendScopeCoverage(buildVersion, id)
@@ -45,20 +47,22 @@ internal suspend fun Plugin.changeActiveScope(
     sendActiveScope()
     if (scopeChange.savePrevScope) {
         if (prevScope.any()) {
-            logger.debug { "finish scope with id=${prevScope.id}" }
-            val context = state.coverContext()
-            val counters = prevScope.calcBundleCounters(context)
-            val coverData = counters.calculateCoverageData(context, prevScope)
-            val finishedScope = prevScope.finish(scopeChange.prevScopeEnabled).run {
-                copy(
-                    data = data.copy(bundleCounters = counters),
-                    summary = summary.copy(coverage = coverData.coverage as ScopeCoverage)
-                )
-            }
-            state.scopeManager.store(finishedScope)
-            sendScopeSummary(finishedScope.summary)
-            coverData.sendScopeCoverage(buildVersion, finishedScope.id)
-            logger.info { "$finishedScope has been saved." }
+            measureTimedValue {
+                logger.debug { "finish scope with id=${prevScope.id}" }
+                val context = state.coverContext()
+                val counters = prevScope.calcBundleCounters(context)
+                val coverData = counters.calculateCoverageData(context, prevScope)
+                val finishedScope = prevScope.finish(scopeChange.prevScopeEnabled).run {
+                    copy(
+                        data = data.copy(bundleCounters = counters),
+                        summary = summary.copy(coverage = coverData.coverage as ScopeCoverage)
+                    )
+                }
+                state.scopeManager.store(finishedScope)
+                sendScopeSummary(finishedScope.summary)
+                coverData.sendScopeCoverage(buildVersion, finishedScope.id)
+                logger.info { "$finishedScope has been saved." }
+            }.apply { println("[@@@@] changeActiveScope time ${duration.inSeconds}") }.value
         } else {
             cleanTopics(prevScope.id)
             logger.info { "$prevScope is empty, it won't be added to the build." }
