@@ -42,7 +42,6 @@ internal suspend fun Plugin.changeActiveScope(
 ): ActionResult = if (state.scopeByName(scopeChange.scopeName) == null) {
     val prevScope = state.changeActiveScope(scopeChange.scopeName.trim())
     state.storeActiveScopeInfo()
-    storeClient.deleteSessions(prevScope.id)
     sendActiveSessions()
     sendActiveScope()
     if (scopeChange.savePrevScope) {
@@ -50,7 +49,7 @@ internal suspend fun Plugin.changeActiveScope(
             measureTimedValue {
                 logger.debug { "finish scope with id=${prevScope.id}" }
                 val context = state.coverContext()
-                val counters = prevScope.calcBundleCounters(context)
+                val counters = prevScope.calcBundleCounters(context,prevScope.bundlesByTestsCache)
                 val coverData = counters.calculateCoverageData(context, prevScope)
                 val finishedScope = prevScope.finish(scopeChange.prevScopeEnabled).run {
                     copy(
@@ -58,6 +57,7 @@ internal suspend fun Plugin.changeActiveScope(
                         summary = summary.copy(coverage = coverData.coverage as ScopeCoverage)
                     )
                 }
+                prevScope.resetCache()
                 state.scopeManager.store(finishedScope)
                 sendScopeSummary(finishedScope.summary)
                 coverData.sendScopeCoverage(buildVersion, finishedScope.id)
