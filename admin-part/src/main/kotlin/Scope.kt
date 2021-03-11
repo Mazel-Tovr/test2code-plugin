@@ -117,8 +117,8 @@ class ActiveScope(
         ),
         data = toList().let { sessions ->
             ScopeData(
-                sessions = sessions,
-                typedTests = sessions.flatMapTo(mutableSetOf(), Session::tests)
+                sessions = sessions//,
+               // typedTests = sessions.flatMapTo(mutableSetOf(), Session::tests)
             )
         }
     )
@@ -217,7 +217,7 @@ class ActiveScope(
 data class ScopeData(
     @Transient
     val sessions: List<FinishedSession> = emptyList(),
-    val typedTests: Set<TypedTest> = emptySet(),
+  //  val typedTests: Set<TypedTest> = emptySet(),
     val bundleCounters: BundleCounters = BundleCounters.empty
 ) {
     companion object {

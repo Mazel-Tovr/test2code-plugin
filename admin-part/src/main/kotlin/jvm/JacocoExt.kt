@@ -29,14 +29,15 @@ internal typealias ClassBytes = Map<String, ByteArray>
 
 internal fun Sequence<ExecClassData>.bundle(
     probeIds: Map<String, Long>,
-    classBytes: ClassBytes
+    classBytes: ClassBytes,
+    filter: Boolean
 ): BundleCounter = bundle(probeIds) { analyzer ->
     contents.forEach { execData ->
         classBytes[execData.name]?.let { classesBytes ->
             analyzer.analyzeClass(classesBytes, execData.name)
         } ?: println("WARN No class data for ${execData.name}, id=${execData.id}")
     }
-}.toCounter()
+}.toCounter(filter)
 
 internal fun Iterable<String>.bundle(
     classBytes: Map<String, ByteArray>,
@@ -69,7 +70,7 @@ internal fun Sequence<ExecClassData>.execDataStore(
     }
 }
 
-internal fun IBundleCoverage.toCounter() = BundleCounter(
+internal fun IBundleCoverage.toCounter(filter: Boolean = false) = BundleCounter(
     name = "",
     count = instructionCounter.toCount(),
     methodCount = methodCounter.toCount(),
@@ -101,7 +102,7 @@ internal fun IBundleCoverage.toCounter() = BundleCounter(
                                 decl = m.desc,//declaration(m.desc), //TODO Regex has a big impact on performance
                                 count = m.instructionCounter.toCount()
                             )
-                        }
+                        }.filter { !(filter && it.count.covered > 0) }
                     )
                 }
             )

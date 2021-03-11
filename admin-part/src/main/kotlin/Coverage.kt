@@ -167,7 +167,7 @@ private fun Sequence<Session>.bundlesByTests(
         sessions.asSequence().flatten()
             .groupBy { TypedTest(it.testName, testType) }
             .filterNot { cache?.map?.containsKey(it.key) ?: false }
-            .map { it.key to it.value.asSequence().bundle(context) }
+            .map { it.key to it.value.asSequence().bundle(context, true) }
             .toMap(mutableMapOf())
     }.reduce { m1, m2 ->
         m1.apply { putAll(m2) }
@@ -185,11 +185,13 @@ internal fun Sequence<ExecClassData>.overlappingBundle(
 }.bundle(context)
 
 internal fun Sequence<ExecClassData>.bundle(
-    context: CoverContext
+    context: CoverContext,
+    filter: Boolean = false
 ): BundleCounter = when (context.agentType) {
     "JAVA" -> bundle(
         probeIds = context.probeIds,
-        classBytes = context.classBytes
+        classBytes = context.classBytes,
+        filter
     )
     else -> bundle(context.packageTree)
 }
