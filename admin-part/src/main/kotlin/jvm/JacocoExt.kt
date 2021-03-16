@@ -43,7 +43,7 @@ internal fun Iterable<String>.bundle(
     probeIds: Map<String, Long>
 ): BundleCounter = emptySequence<ExecClassData>().bundle(probeIds) { analyzer ->
     forEach { name -> analyzer.analyzeClass(classBytes.getValue(name), name) }
-}.toCounter()
+}.toCounter(false)
 
 private fun Sequence<ExecClassData>.bundle(
     probeIds: Map<String, Long>,
@@ -69,7 +69,7 @@ internal fun Sequence<ExecClassData>.execDataStore(
     }
 }
 
-internal fun IBundleCoverage.toCounter() = BundleCounter(
+internal fun IBundleCoverage.toCounter(filter: Boolean = true) = BundleCounter(
     name = "",
     count = instructionCounter.toCount(),
     methodCount = methodCounter.toCount(),
@@ -81,27 +81,27 @@ internal fun IBundleCoverage.toCounter() = BundleCounter(
                 if (!it) {
                     logger.warn { "Class without methods - ${c.name}." }
                 }
-            }
+            } && c.methods.takeIf { filter }?.any { it.instructionCounter.coveredCount > 0 } ?: true
         }
         if (classesWithMethods.any()) {
             PackageCounter(
-                name = p.name,
+                name = p.name.intern(),
                 count = p.instructionCounter.toCount(),
                 classCount = p.classCounter.toCount(),
                 methodCount = p.methodCounter.toCount(),
                 classes = classesWithMethods.map { c ->
                     ClassCounter(
-                        path = p.name,
-                        name = c.name.toShortClassName(),
+                        path = p.name.intern(),
+                        name = c.name.toShortClassName().intern(),
                         count = c.instructionCounter.toCount(),
                         methods = c.methods.map { m ->
                             MethodCounter(
-                                name = m.name,
-                                desc = m.desc,
-                                decl = m.desc,//declaration(m.desc), //TODO Regex has a big impact on performance
+                                name = m.name.intern(),
+                                desc = m.desc.intern(),
+                                decl = m.desc.intern(),//declaration(m.desc), //TODO Regex has a big impact on performance
                                 count = m.instructionCounter.toCount()
                             )
-                        }
+                        }.run { takeIf { filter }?.filter { it.count.covered > 0 } ?: this }
                     )
                 }
             )
@@ -169,5 +169,5 @@ fun parseDescType(char: Char, charIterator: CharIterator): String = when (char) 
 }
 
 private fun ExecClassData.toExecutionData(probeIds: Map<String, Long>): ExecutionData? = probeIds[className]?.let {
-    ExecutionData(it, className, probes.toBooleanArray())
+    ExecutionData(it, className.intern(), probes.toBooleanArray())
 }

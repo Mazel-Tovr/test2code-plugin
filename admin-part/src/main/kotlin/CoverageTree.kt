@@ -31,19 +31,19 @@ internal fun Iterable<AstEntity>.toPackages(): List<JavaPackageCoverage> = run {
             classes = astEntities.mapNotNull { ast ->
                 ast.methodsWithProbes().takeIf { it.any() }?.let { methods ->
                     JavaClassCoverage(
-                        id = "$path.${ast.name}".crc64,
-                        name = ast.name,
-                        path = path,
+                        id = "$path.${ast.name}".crc64.intern(),
+                        name = ast.name.intern(),
+                        path = path.intern(),
                         totalMethodsCount = methods.count(),
                         totalCount = methods.sumBy { it.count },
                         methods = methods.fold(listOf()) { acc, astMethod ->
                             val desc = astMethod.toDesc()
                             acc + JavaMethodCoverage(
-                                id = "$path.${ast.name}.${astMethod.name}".crc64,
-                                name = astMethod.name,
-                                desc = desc,
+                                id = "$path.${ast.name}.${astMethod.name}".crc64.intern(),
+                                name = astMethod.name.intern(),
+                                desc = desc.intern(),
                                 count = astMethod.probes.size,
-                                decl = desc,
+                                decl = desc.intern(),
                                 probeRange = (acc.lastOrNull()?.probeRange?.last?.inc() ?: 0).let {
                                     ProbeRange(it, it + astMethod.probes.lastIndex)
                                 }
@@ -100,9 +100,9 @@ private fun Collection<ClassCounter>.classTree(
             parsedMethods.any { it.name == methodCov.name && it.desc == methodCov.desc }
         }
         JavaClassCoverage(
-            id = classKey.id,
+            id = classKey.id.intern(),
             name = classCoverage.name.toShortClassName(),
-            path = classCoverage.name,
+            path = classCoverage.name.intern(),
             totalMethodsCount = methods.count(),
             totalCount = methods.sumBy { it.count },
             methods = methods,
@@ -135,10 +135,10 @@ internal fun ClassCounter.toMethodCoverage(
     return methods.filter(filter).map { methodCoverage ->
         val methodKey = methodCoverage.coverageKey(this)
         JavaMethodCoverage(
-            id = methodKey.id,
+            id = methodKey.id.intern(),
             name = name.methodName(methodCoverage.name),
-            desc = methodCoverage.desc,
-            decl = methodCoverage.decl,
+            desc = methodCoverage.desc.intern(),
+            decl = methodCoverage.decl.intern(),
             coverage = methodCoverage.count.percentage(),
             count = methodCoverage.count.total,
             assocTestsCount = assocTestsMap[methodKey]?.count() ?: 0
@@ -148,6 +148,6 @@ internal fun ClassCounter.toMethodCoverage(
 
 internal fun AstMethod.toDesc(): String = params.joinToString(
     prefix = "(", postfix = "):$returnType"
-)
+).intern()
 
 private fun AstEntity.methodsWithProbes(): List<AstMethod> = methods.filter { it.probes.any() }

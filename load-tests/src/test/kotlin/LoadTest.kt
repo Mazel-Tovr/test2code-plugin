@@ -22,8 +22,8 @@ class LoadTest : E2EPluginTest() {
 
 
     companion object {
-        private const val CLASS_COUNT = 1000
-        private const val METHODS_COUNT = 5000
+        private const val CLASS_COUNT = 6000
+        private const val METHODS_COUNT = 30000
         private const val PACKAGES_COUNT = 50
         private const val PACKAGE_HIERARCHY_LEVEL = 4
     }
@@ -97,7 +97,7 @@ class LoadTest : E2EPluginTest() {
 
                     plugUi.activeSessions()!!.run { count shouldBe 1 }
 
-                    repeat(10) { index ->
+                    repeat(300) { index ->
                         runWithSession(startSession.payload.sessionId, "test$index") {//todo change testName
                             val tests = build.tests
 
@@ -136,7 +136,9 @@ class LoadTest : E2EPluginTest() {
                         first().coverage shouldBeGreaterThan 0.0
                     }
                 }.join()
-                delay(100)
+                println("I AM DONE")
+                while (true)
+                    delay(100)
             }
         }
     }

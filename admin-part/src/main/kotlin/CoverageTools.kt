@@ -44,11 +44,11 @@ internal data class CoverageInfoSet(
 
 fun Map<CoverageKey, List<TypedTest>>.getAssociatedTests() = map { (key, tests) ->
     AssociatedTests(
-        id = key.id,
-        packageName = key.packageName,
-        className = key.className,
-        methodName = key.className.methodName(key.methodName),
-        tests = tests.sortedBy { it.name }
+        id = key.id.intern(),
+        packageName = key.packageName.intern(),
+        className = key.className.intern(),
+        methodName = key.className.methodName(key.methodName).intern(),
+        tests = tests.sortedBy { it.name.intern() }
     )
 }.sortedBy { it.methodName }
 
@@ -72,18 +72,20 @@ internal fun CoverContext.calculateBundleMethods(
 }
 
 internal fun Map<TypedTest, BundleCounter>.methodsCoveredByTest(
-    context: CoverContext
+    context: CoverContext,
+    cache: AtomicCache<BundleCounter, MethodsCoveredByTest>?
 ): List<MethodsCoveredByTest> = map { (typedTest, bundle) ->
-    val changes = context.calculateBundleMethods(bundle, true)
-    MethodsCoveredByTest(
-        id = typedTest.id(),
-        testName = typedTest.name,
-        testType = typedTest.type,
-        allMethods = changes.totalMethods.methods,
-        newMethods = changes.newMethods.methods,
-        modifiedMethods = changes.allModifiedMethods.methods,
-        unaffectedMethods = changes.unaffectedMethods.methods
-    )
+    cache?.get(bundle) ?: context.calculateBundleMethods(bundle, true).let { changes ->
+        MethodsCoveredByTest(
+            id = typedTest.id(),
+            testName = typedTest.name,
+            testType = typedTest.type,
+            allMethods = changes.totalMethods.methods,
+            newMethods = changes.newMethods.methods,
+            modifiedMethods = changes.allModifiedMethods.methods,
+            unaffectedMethods = changes.unaffectedMethods.methods
+        ).also { cache?.set(bundle, it) }
+    }
 }
 
 private fun Iterable<Method>.toInfo(

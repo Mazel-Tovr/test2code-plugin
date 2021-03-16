@@ -89,10 +89,10 @@ internal class AgentState(
                     logger.debug { "initializing DataBuilder..." }
                     val methods = map { (e, m) ->
                         Method(
-                            ownerClass = "${e.path}/${e.name}",
-                            name = m.name,
-                            desc = m.toDesc(),
-                            hash = m.checksum
+                            ownerClass = "${e.path}/${e.name}".intern(),
+                            name = m.name.intern(),
+                            desc = m.toDesc().intern(),
+                            hash = m.checksum.intern()
                         )
                     }.sorted()
                     val packages = data.toPackages()
@@ -210,6 +210,7 @@ internal class AgentState(
         sessionId: String
     ): FinishedSession? = activeScope.finishSession(sessionId)?.also {
         if (it.any()) {
+            logger.debug { "FinishSession. size of probes = ${it.probes.size}" }
             storeClient.storeSession(activeScope.id, it)
             logger.debug { "Session $sessionId finished." }
         } else logger.debug { "Session with id $sessionId is empty, it won't be added to the active scope." }

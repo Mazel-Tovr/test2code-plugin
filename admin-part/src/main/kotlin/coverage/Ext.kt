@@ -67,6 +67,17 @@ internal fun NamedCounter.coverageKey(parent: NamedCounter? = null): CoverageKey
 }
 
 internal fun BundleCounter.coverageKeys(): Sequence<CoverageKey> = packages.asSequence().flatMap { p ->
+    //Only packages
+    /* sequenceOf(p.coverageKey()) */
+    //Only methods
+    /*
+       p.classes.asSequence().flatMap { c ->
+        c.methods.asSequence().mapNotNull { m ->
+            m.takeIf { it.count.covered > 0 }?.coverageKey(c)
+        }
+    }
+    */
+    //All
     sequenceOf(p.coverageKey()) + p.classes.asSequence().flatMap { c ->
         sequenceOf(c.coverageKey()) + c.methods.asSequence().mapNotNull { m ->
             m.takeIf { it.count.covered > 0 }?.coverageKey(c)
@@ -139,15 +150,15 @@ internal fun Sequence<PackageCounter>.toCoveredMethods(
 
 internal fun Iterable<Method>.toPackageSet(): Set<String> = takeIf { it.any() }?.run {
     mapTo(mutableSetOf()) { method ->
-        method.ownerClass.takeIf { '/' in it }?.substringBeforeLast('/').orEmpty()
+        method.ownerClass.takeIf { '/' in it }?.substringBeforeLast('/').orEmpty().intern()
     }
 }.orEmpty()
 
 internal fun Method.toCovered(count: Count?) = CoverMethod(
-    ownerClass = ownerClass,
-    name = ownerClass.methodName(name),
-    desc = desc,//.takeIf { "):" in it } ?: declaration(desc), //TODO js methods //Regex has a big impact on performance
-    hash = hash,
+    ownerClass = ownerClass.intern(),
+    name = ownerClass.methodName(name).intern(),
+    desc = desc.intern(),//.takeIf { "):" in it } ?: declaration(desc), //TODO js methods //Regex has a big impact on performance
+    hash = hash.intern(),
     count = count ?: zeroCount,
     coverageRate = count?.coverageRate() ?: CoverageRate.MISSED
 )
@@ -155,11 +166,11 @@ internal fun Method.toCovered(count: Count?) = CoverMethod(
 internal fun Method.toCovered(counter: MethodCounter? = null): CoverMethod = toCovered(counter?.count)
 
 internal fun String.typedTest(type: String) = TypedTest(
-    type = type,
-    name = urlDecode()
+    type = type.intern(),
+    name = urlDecode().intern()
 )
 
-internal fun TypedTest.id() = "$name:$type"
+internal fun TypedTest.id() = "$name:$type".intern()
 
 private fun Int.toArrowType(): ArrowType? = when (this) {
     in Int.MIN_VALUE..-1 -> ArrowType.INCREASE
@@ -167,7 +178,7 @@ private fun Int.toArrowType(): ArrowType? = when (this) {
     else -> null
 }
 
-private fun Method.signature() = "$name$desc"
+private fun Method.signature() = "$name$desc".intern()
 
 //TODO remove
 internal fun Count.coverageRate() = when (covered) {

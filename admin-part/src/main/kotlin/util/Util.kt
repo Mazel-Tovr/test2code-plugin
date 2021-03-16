@@ -41,9 +41,9 @@ internal fun String.urlDecode(): String = takeIf { '%' in it }?.run {
     runCatching { URLDecoder.decode(this, "UTF-8") }.getOrNull()
 } ?: this
 
-internal fun String.toShortClassName(): String = substringAfterLast('/')
+internal fun String.toShortClassName(): String = substringAfterLast('/').intern()
 
-val String.crc64: String get() = CRC64.classId(toByteArray()).toString(Character.MAX_RADIX)
+val String.crc64: String get() = CRC64.classId(toByteArray()).toString(Character.MAX_RADIX).intern()
 
 internal fun String.crc64(): Long = CRC64.classId(toByteArray())
 

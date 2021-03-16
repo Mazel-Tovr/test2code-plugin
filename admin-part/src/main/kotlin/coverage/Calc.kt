@@ -43,17 +43,17 @@ internal fun Sequence<ExecClassData>.bundle(
         val classes = classNames.map { className ->
             val probes = probesByClasses.getValue(className)
             ClassCounter(
-                path = pkgName,
-                name = className.toShortClassName(),
+                path = pkgName.intern(),
+                name = className.toShortClassName().intern(),
                 count = probes.toCount(),
                 methods = classMethods.getValue(className).map {
                     val methodProbes = probes.slice(it.probeRange)
-                    MethodCounter(it.name, it.desc, it.decl, methodProbes.toCount())
+                    MethodCounter(it.name.intern(), it.desc.intern(), it.decl.intern(), methodProbes.toCount())
                 }
             )
         }
         PackageCounter(
-            name = pkgName,
+            name = pkgName.intern(),
             count = classNames.flatMap { probesByClasses[it] ?: emptyList() }.toCount(),
             classCount = Count(
                 classNames.count { name -> probesByClasses.getValue(name).any { it } },

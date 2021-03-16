@@ -29,10 +29,10 @@ internal fun ClassCounter.parseMethods(classBytes: ByteArray): List<Method> = ru
     methods.map { m ->
         val method = parsedMethods[m.name to m.desc]
         Method(
-            ownerClass = fullName,
-            name = m.name,
-            desc = m.desc,
-            hash = method.checksum()
+            ownerClass = fullName.intern(),
+            name = m.name.intern(),
+            desc = m.desc.intern(),
+            hash = method.checksum().intern()
         )
     }
 }

@@ -149,7 +149,7 @@ private operator fun RiskCounts.plus(other: RiskCounts) = RiskCounts(
 private fun AgentSummary.toTestTypeSummary() = coverageByType.map { (type, count) ->
     count.copy(total = coverage.total).let {
         TestTypeSummary(
-            type = type,
+            type = type.intern(),
             summary = TestSummary(
                 coverage = CoverDto(
                     percentage = it.percentage(),
