@@ -32,32 +32,21 @@ internal suspend fun StoreClient.loadSessions(
     scopeId: String
 ): List<FinishedSession> = findBy<StoredSession> {
     StoredSession::scopeId eq scopeId
-}.map { ProtoBuf.load(FinishedSession.serializer(), Zstd.decompress(it.data)) }.onEach { e ->
-    e.testStats.forEach { (f, s) ->
-        f.apply {
-            name.intern()
-            type.intern()
-        }
-        s.result.apply {
-            name.intern()
-        }
-
+}.map { ProtoBuf.load(FinishedSession.serializer(), Zstd.decompress(it.data)) }.let { list ->
+    list.map { finishedSession ->
+        finishedSession.copy(
+            id = finishedSession.id.intern(),
+            testType = finishedSession.testType.intern(),
+            tests = finishedSession.tests.map { it.copyIntern() }.toSet(),
+            testStats = finishedSession.testStats.mapKeys { it.key.copyIntern() },
+            probes = finishedSession.probes.map {
+                it.copy(
+                    className = it.className.intern(),
+                    testName = it.testName.intern()
+                )
+            }
+        )
     }
-    e.probes.forEach {
-        it.apply {
-            className.intern();
-            testName.intern()
-        }
-    }
-    e.tests.forEach {
-        it.apply {
-            name.intern()
-            type.intern()
-        }
-    }
-    e.testType.intern()
-    e.id.intern()
-
 }
 
 internal suspend fun StoreClient.storeSession(

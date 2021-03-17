@@ -16,6 +16,7 @@
 package com.epam.drill.plugins.test2code.storage
 
 import com.epam.drill.plugins.test2code.*
+import com.epam.drill.plugins.test2code.api.*
 import com.epam.drill.plugins.test2code.coverage.*
 import com.epam.drill.plugins.test2code.util.*
 import com.epam.kodux.*
@@ -43,11 +44,33 @@ class StoredBuildTests(
 internal suspend fun StoreClient.loadClassData(
     version: String
 ): ClassData? = findById<StoredClassData>(version)?.run {
-    ProtoBuf.load(ClassData.serializer(), Zstd.decompress(data)).also {
-        it.buildVersion.intern()
-        it.methods.forEach {
-
-        }
+    ProtoBuf.load(ClassData.serializer(), Zstd.decompress(data)).let { classData: ClassData ->
+        classData.copy(
+            buildVersion = classData.buildVersion.intern(),
+            packageTree = classData.packageTree.let { packageTree ->
+                packageTree.copy(packages = packageTree.packages.map { javaPackageCoverage: JavaPackageCoverage ->
+                    javaPackageCoverage.copy(
+                        id = javaPackageCoverage.id.intern(),
+                        name = javaPackageCoverage.name.intern(),
+                        classes = javaPackageCoverage.classes.map { javaClassCoverage ->
+                            javaClassCoverage.copy(
+                                id = javaClassCoverage.id.intern(),
+                                name = javaClassCoverage.name.intern(),
+                                path = javaClassCoverage.path.intern(),
+                                methods = javaClassCoverage.methods.map { javaMethodCoverage ->
+                                    javaMethodCoverage.copy(
+                                        id = javaMethodCoverage.id.intern(),
+                                        name = javaMethodCoverage.name.intern(),
+                                        desc = javaMethodCoverage.desc.intern(),
+                                        decl = javaMethodCoverage.decl.intern(),
+                                    )
+                                }
+                            )
+                        }
+                    )
+                })
+            }
+        )
     }
 }
 
@@ -60,14 +83,14 @@ internal suspend fun StoreClient.loadBuild(
     version: String
 ): CachedBuild? = findById<BuildStats>(version)?.let { stats ->
     CachedBuild(
-        version = version,
-        stats = stats,
+        version = version.intern(),
+        stats = stats.copy(coverageByType = stats.coverageByType.mapKeys { it.key.intern() }),
         bundleCounters = findById<StoredBundles>(version)?.run {
             ProtoBuf.load(BundleCounters.serializer(), Zstd.decompress(data))
-        } ?: BundleCounters.empty,
+        }?.copyIntern() ?: BundleCounters.empty,
         tests = findById<StoredBuildTests>(version)?.run {
             ProtoBuf.load(BuildTests.serializer(), Zstd.decompress(data))
-        } ?: BuildTests()
+        }?.copyIntern() ?: BuildTests()
     )
 }
 

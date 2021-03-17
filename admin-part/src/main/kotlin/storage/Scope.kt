@@ -16,6 +16,8 @@
 package com.epam.drill.plugins.test2code.storage
 
 import com.epam.drill.plugins.test2code.*
+import com.epam.drill.plugins.test2code.api.*
+import com.epam.drill.plugins.test2code.coverage.*
 import com.epam.drill.plugins.test2code.util.*
 import com.epam.kodux.*
 import kotlinx.serialization.*
@@ -102,32 +104,40 @@ private suspend fun FinishedScope.withProbes(
     val sessions = storeClient.loadSessions(id)
     logger.debug { "take scope $id $name with sessions size ${sessions.size}" }
     copy(data = scopeData.copy(sessions = sessions))
-}.also { scope ->
-    scope?.forEach { e ->
-        e.testStats.forEach { (f, s) ->
-            f.apply {
-                name.intern()
-                type.intern()
-            }
-            s.result.apply {
-                name.intern()
-            }
-
-        }
-        e.probes.forEach {
-            it.apply {
-                className.intern();
-                testName.intern()
-            }
-        }
-        e.id.intern()
-        e.testType.intern()
-        e.tests.forEach {
-            it.apply {
-                name.intern()
-                type.intern()
-            }
-        }
-
-    }
+}?.let { scope ->
+    scope.copy(
+        id = scope.id.intern(),
+        buildVersion = scope.buildVersion.intern(),
+        name = scope.name.intern(),
+        summary = scope.summary.copy(
+            id = scope.summary.id.intern(),
+            name = scope.summary.name.intern(),
+            coverage = scope.summary.coverage.copy(byTestType = scope.summary.coverage.byTestType.map {
+                it.copy(type = it.type.intern())
+            })
+        ),
+        data = scope.data.copy(
+            sessions = scope.data.sessions.map { finishedSession ->
+                finishedSession.copy(
+                    id = finishedSession.id.intern(),
+                    testType = finishedSession.testType.intern(),
+                    tests = finishedSession.tests.map { typedTest ->
+                        typedTest.copyIntern()
+                    }.toSet(),
+                    testStats = finishedSession.testStats.asSequence().associate { entry ->
+                        entry.key.copyIntern() to entry.value
+                    },
+                    probes = finishedSession.probes.map {
+                        it.copy(
+                            className = it.className.intern(),
+                            testName = it.testName.intern()
+                        )
+                    }
+                )
+            },
+            bundleCounters = scope.data.bundleCounters.copyIntern()
+        )
+    )
 } ?: this
+
+

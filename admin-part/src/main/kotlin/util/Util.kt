@@ -15,6 +15,9 @@
  */
 package com.epam.drill.plugins.test2code.util
 
+import com.epam.drill.plugins.test2code.*
+import com.epam.drill.plugins.test2code.api.*
+import com.epam.drill.plugins.test2code.coverage.*
 import kotlinx.coroutines.*
 import org.jacoco.core.internal.data.*
 import java.net.*
@@ -51,3 +54,56 @@ infix fun Number.percentOf(other: Number): Double = when (val dOther = other.toD
     0.0 -> 0.0
     else -> toDouble() * 100.0 / dOther
 }
+
+
+fun BundleCounter.copyIntern() = copy(
+    name = name.intern(),
+    packages = packages.map { packageCounter ->
+        packageCounter.copy(
+            name = packageCounter.name.intern(),
+            classes = packageCounter.classes.map { classCounter ->
+                classCounter.copy(
+                    name = classCounter.name.intern(),
+                    path = classCounter.path.intern(),
+                    methods = classCounter.methods.map { methodCounter ->
+                        methodCounter.copy(
+                            name = methodCounter.name.intern(),
+                            desc = methodCounter.desc.intern(),
+                            decl = methodCounter.decl.intern()
+                        )
+                    }
+                )
+            }
+        )
+    }
+)
+
+fun TypedTest.copyIntern() = copy(name = name.intern(), type = type.intern())
+
+fun BundleCounters.copyIntern() = copy(
+    all = all.copyIntern(),
+    testTypeOverlap = testTypeOverlap.copyIntern(),
+    overlap = overlap.copyIntern(),
+    byTestType = byTestType.asSequence().associate { entry ->
+        entry.key.intern() to entry.value.copyIntern()
+    },
+    byTest = byTest.asSequence().associate { entry ->
+        entry.key.copyIntern() to entry.value.copyIntern()
+    },
+    statsByTest = statsByTest.mapKeys { it.key.copyIntern() }
+)
+
+fun BuildTests.copyIntern() = copy(
+    tests = tests.asSequence().associate { entry ->
+        entry.key.intern() to entry.value.map { it.intern() }
+    },
+    assocTests = assocTests.map { it.copyIntern() }.toSet()
+)
+
+fun AssociatedTests.copyIntern() = copy(
+    id = id.intern(),
+    packageName = packageName.intern(),
+    className = className.intern(),
+    methodName = methodName.intern(),
+    tests = tests.map { it.copyIntern() }
+)

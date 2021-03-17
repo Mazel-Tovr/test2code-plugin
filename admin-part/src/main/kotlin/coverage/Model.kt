@@ -66,7 +66,7 @@ data class CoverageKey(
 }
 
 @Serializable
-class BundleCounters(
+data class BundleCounters(
     val all: BundleCounter,
     val testTypeOverlap: BundleCounter,
     val overlap: BundleCounter,
