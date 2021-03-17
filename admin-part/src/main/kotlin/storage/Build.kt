@@ -43,7 +43,12 @@ class StoredBuildTests(
 internal suspend fun StoreClient.loadClassData(
     version: String
 ): ClassData? = findById<StoredClassData>(version)?.run {
-    ProtoBuf.load(ClassData.serializer(), Zstd.decompress(data))
+    ProtoBuf.load(ClassData.serializer(), Zstd.decompress(data)).also {
+        it.buildVersion.intern()
+        it.methods.forEach {
+
+        }
+    }
 }
 
 internal suspend fun ClassData.store(storage: StoreClient) {

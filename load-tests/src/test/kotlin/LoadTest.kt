@@ -97,7 +97,7 @@ class LoadTest : E2EPluginTest() {
 
                     plugUi.activeSessions()!!.run { count shouldBe 1 }
 
-                    repeat(300) { index ->
+                    repeat(200) { index ->
                         runWithSession(startSession.payload.sessionId, "test$index") {//todo change testName
                             val tests = build.tests
 

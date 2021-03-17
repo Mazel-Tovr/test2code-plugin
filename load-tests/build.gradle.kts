@@ -38,6 +38,7 @@ dependencies {
     testImplementation("com.epam.drill:drill-agent-part")
     testImplementation("com.epam.drill:drill-admin-part")
     testImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf")
     testImplementation("org.jetbrains.kotlinx:kotlinx-collections-immutable")
 
     testImplementation("com.epam.drill:test-framework:$drillAdminVersion") { isChanging = true }
@@ -87,7 +88,18 @@ tasks {
     }
 
     val loadTest by registering(Test::class) {
-        maxHeapSize = "4g"
+        jvmArgs = listOf(
+            "-Xms100m",
+            "-Xmx8g",
+            "-XX:+HeapDumpOnOutOfMemoryError",
+            "-XX:HeapDumpPath=D:\\dumpppp",
+            "-XX:+ExitOnOutOfMemoryError",
+            "-XX:+UseStringDeduplication",
+            "-XX:+UseG1GC",
+            "-XX:StringDeduplicationAgeThreshold=1",
+            "-XX:+PrintStringDeduplicationStatistics"
+        )
+       // maxHeapSize = "4g"
         description = "Runs the loadTest tests"
         group = "verification"
         dependsOn(testBuildClassesTasks.toTypedArray())

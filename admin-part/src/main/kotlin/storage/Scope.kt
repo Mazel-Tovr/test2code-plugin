@@ -102,4 +102,32 @@ private suspend fun FinishedScope.withProbes(
     val sessions = storeClient.loadSessions(id)
     logger.debug { "take scope $id $name with sessions size ${sessions.size}" }
     copy(data = scopeData.copy(sessions = sessions))
+}.also { scope ->
+    scope?.forEach { e ->
+        e.testStats.forEach { (f, s) ->
+            f.apply {
+                name.intern()
+                type.intern()
+            }
+            s.result.apply {
+                name.intern()
+            }
+
+        }
+        e.probes.forEach {
+            it.apply {
+                className.intern();
+                testName.intern()
+            }
+        }
+        e.id.intern()
+        e.testType.intern()
+        e.tests.forEach {
+            it.apply {
+                name.intern()
+                type.intern()
+            }
+        }
+
+    }
 } ?: this
