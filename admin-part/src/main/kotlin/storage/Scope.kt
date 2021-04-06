@@ -28,7 +28,7 @@ class ScopeManager(private val storage: StoreClient) {
 
     suspend fun byVersion(
         buildVersion: String,
-        withData: Boolean = false
+        withData: Boolean = false,
     ): Sequence<FinishedScope> = storage.executeInAsyncTransaction {
         findBy<FinishedScope> {
             FinishedScope::buildVersion eq buildVersion
@@ -67,7 +67,7 @@ class ScopeManager(private val storage: StoreClient) {
 
     suspend fun byId(
         scopeId: String,
-        withProbes: Boolean = false
+        withProbes: Boolean = false,
     ): FinishedScope? = storage.run {
         takeIf { withProbes }?.executeInAsyncTransaction {
             findById<FinishedScope>(scopeId)?.run {
@@ -85,20 +85,20 @@ class ScopeManager(private val storage: StoreClient) {
 internal class ScopeDataBytes(
     @Id val id: String,
     val buildVersion: String,
-    val bytes: ByteArray
-)
+    val bytes: ByteArray,
+): java.io.Serializable
 
 private fun FinishedScope.toDataBytes() = ScopeDataBytes(
     id = id,
     buildVersion = buildVersion,
-    bytes = ProtoBuf.dump(ScopeData.serializer(), data).let(Zstd::compress)
+    bytes = dump(data).let(Zstd::compress)
 )
 
 private suspend fun FinishedScope.withProbes(
     data: ScopeDataBytes?,
     storeClient: StoreClient,
 ): FinishedScope = data?.let {
-    val scopeData = ProtoBuf.load(ScopeData.serializer(), Zstd.decompress(it.bytes))
+    val scopeData: ScopeData = load(Zstd.decompress(it.bytes))
     val sessions = storeClient.loadSessions(id)
     logger.debug { "take scope $id $name with sessions size ${sessions.size}" }
     copy(data = scopeData.copy(sessions = sessions))

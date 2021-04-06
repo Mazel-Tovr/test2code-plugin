@@ -26,19 +26,19 @@ internal class StoredSession(
     @Id val id: String,
     val scopeId: String,
     val data: ByteArray
-)
+) : java.io.Serializable
 
 internal suspend fun StoreClient.loadSessions(
     scopeId: String
 ): List<FinishedSession> = findBy<StoredSession> {
     StoredSession::scopeId eq scopeId
-}.map { ProtoBuf.load(FinishedSession.serializer(), Zstd.decompress(it.data)) }
+}.map { load( Zstd.decompress(it.data)) }
 
 internal suspend fun StoreClient.storeSession(
     scopeId: String,
     session: FinishedSession
 ) {
-    val data = ProtoBuf.dump(FinishedSession.serializer(), session)
+    val data = dump(session.copy(tests = HashSet(session.tests)))
     store(
         StoredSession(
             id = session.id,

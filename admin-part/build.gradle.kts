@@ -25,14 +25,15 @@ dependencies {
     jarDeps(project(":agent-api"))
     jarDeps("org.jacoco:org.jacoco.core")
     jarDeps("org.apache.bcel:bcel")
+    jarDeps("de.ruedigermoeller:fst")
 
     //provided by drill runtime
     implementation("com.epam.drill:drill-admin-part")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-    compileOnly("org.jetbrains.kotlinx:atomicfu")
 
+    compileOnly("org.jetbrains.kotlinx:atomicfu")
     //provided by admin
     //TODO create a platform for admin dependencies
     implementation("com.epam.drill:kodux")
