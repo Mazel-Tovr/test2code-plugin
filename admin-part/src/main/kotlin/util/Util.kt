@@ -33,9 +33,9 @@ internal val allAvailableProcessDispatcher = Executors.newFixedThreadPool(availa
 tailrec fun Int.gcd(other: Int): Int = takeIf { other == 0 } ?: other.gcd(rem(other))
 
 fun String.methodName(name: String): String = when (name) {
-    "<init>" -> toShortClassName()
-    "<clinit>" -> "static ${toShortClassName()}"
-    else -> name
+    "<init>" -> toShortClassName().intr()
+    "<clinit>" -> "static ${toShortClassName()}".intr()
+    else -> name.intr()
 }
 
 internal fun String.urlDecode(): String = takeIf { '%' in it }?.run {

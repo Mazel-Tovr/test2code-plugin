@@ -17,6 +17,7 @@ package com.epam.drill.plugins.test2code.coverage
 
 import com.epam.drill.plugins.test2code.*
 import com.epam.drill.plugins.test2code.api.*
+import com.epam.drill.plugins.test2code.jvm.*
 import com.epam.drill.plugins.test2code.util.*
 import com.epam.kodux.util.*
 import kotlinx.serialization.*
@@ -49,6 +50,7 @@ internal data class CoverContext(
     val parentBuild: CachedBuild? = null,
     val testsToRun: GroupedTests = emptyMap(),
     val testsToRunParentDurations: TestDurations = TestDurations(),
+    val analyzedClasses: List<ClassCoverage>,
 ) {
     override fun equals(other: Any?): Boolean = super.equals(other)
 
@@ -95,8 +97,24 @@ data class BundleCounter(
     val methodCount: Count = zeroCount,
     val classCount: Count = zeroCount,
     val packageCount: Count = zeroCount,
-    val packages: List<PackageCounter> = emptyList(),
-) : NamedCounter(), java.io.Serializable
+    val packages: List<PackageCounter> = emptyList()
+) : NamedCounter(), java.io.Serializable {
+    companion object {
+        val empty = BundleCounter("")
+    }
+}
+
+fun xx(){
+    Dax("x")
+}
+
+data class Dax(val ss: String){
+    companion object {
+        operator fun invoke(ss:String): Dax {
+            return Dax(ss.intr())
+        }
+    }
+}
 
 @Serializable
 data class PackageCounter(
@@ -122,6 +140,7 @@ data class MethodCounter(
     override val name: String,
     val desc: String,
     val decl: String,
+    val key: String, // fix it.
     override val count: Count,
 ) : NamedCounter(), java.io.Serializable {
     val sign = "$name$desc"

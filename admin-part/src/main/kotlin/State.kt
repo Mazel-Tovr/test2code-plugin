@@ -22,10 +22,12 @@ import com.epam.drill.plugins.test2code.coverage.*
 import com.epam.drill.plugins.test2code.jvm.*
 import com.epam.drill.plugins.test2code.storage.*
 import com.epam.drill.plugins.test2code.util.*
+import com.epam.drill.test2code.jacoco.*
 import com.epam.kodux.*
 import com.epam.kodux.util.*
 import kotlinx.atomicfu.*
 import org.jacoco.core.internal.data.*
+import kotlin.time.*
 
 /**
  * Agent state.
@@ -85,6 +87,7 @@ internal class AgentState(
 
     suspend fun initialized(block: suspend () -> Unit = {}) {
         logger.debug { "initialized by event from agent..." }
+        logger.info { "ClassBytes size: ${adminData.classBytes.values.map { it.size }.sum() / 1024 / 1024} Mb." }
         _data.getAndUpdate {
             when (it) {
                 is ClassData -> it
@@ -157,13 +160,22 @@ internal class AgentState(
     private suspend fun initialized(classData: ClassData) {
         val buildVersion = agentInfo.buildVersion
         val build: CachedBuild = storeClient.loadBuild(buildVersion) ?: CachedBuild(buildVersion)
+        val jvmClassAnalyzer = JvmClassAnalyzer()
+
+        val analyzedClasses: List<ClassCoverage> = trackTime("build analysis") {
+            adminData.classBytes.values.mapNotNull {
+                jvmClassAnalyzer.analyzeClass(it)
+            }
+        }
+
         val coverContext = CoverContext(
             agentType = agentInfo.agentType,
             packageTree = classData.packageTree,
             methods = classData.methods,
             probeIds = classData.probeIds,
             classBytes = adminData.classBytes,
-            build = build
+            build = build,
+            analyzedClasses = analyzedClasses,
         )
         _coverContext.value = coverContext
         val agentId = agentInfo.id
@@ -217,14 +229,14 @@ internal class AgentState(
         sessionId: String
     ): FinishedSession? = activeScope.finishSession(sessionId)?.also {
         if (it.any()) {
-            logger.debug { "FinishSession. size of probes = ${it.probes.size}" }
-            storeClient.storeSession(activeScope.id, it)
+            logger.debug { "FinishSession. size of exec data = ${it.probes.size}" }
+            trackTime("session storing") { storeClient.storeSession(activeScope.id, it) }
             logger.debug { "Session $sessionId finished." }
         } else logger.debug { "Session with id $sessionId is empty, it won't be added to the active scope." }
     }
 
     internal fun updateProbes(
-        buildScopes: Sequence<FinishedScope>
+        buildScopes: Iterable<FinishedScope>
     ) {
         _coverContext.update {
             it?.copy(build = it.build.copy(probes = buildScopes.flatten().flatten().merge()))
@@ -259,7 +271,7 @@ internal class AgentState(
     }!!.build
 
     suspend fun storeBuild() {
-        _coverContext.value?.build?.store(storeClient)
+        trackTime("storeBuild") { _coverContext.value?.build?.store(storeClient) }
     }
 
     suspend fun renameScope(id: String, newName: String): ScopeSummary? = when (id) {
@@ -323,17 +335,19 @@ internal class AgentState(
 
     private suspend fun readActiveScopeInfo(): ActiveScopeInfo? = scopeManager.counter(agentInfo.buildVersion)
 
-    suspend fun storeActiveScopeInfo() = scopeManager.storeCounter(
-        activeScope.run {
-            ActiveScopeInfo(
-                buildVersion = buildVersion,
-                id = id,
-                nth = nth,
-                name = name,
-                startedAt = summary.started
-            )
-        }
-    )
+    suspend fun storeActiveScopeInfo() = trackTime("storeActiveScopeInfo") {
+        scopeManager.storeCounter(
+            activeScope.run {
+                ActiveScopeInfo(
+                    buildVersion = buildVersion,
+                    id = id,
+                    nth = nth,
+                    name = name,
+                    startedAt = summary.started
+                )
+            }
+        )
+    }
 
     private fun scopeName(name: String) = when (val trimmed = name.trim()) {
         "" -> "$DEFAULT_SCOPE_NAME ${activeScope.nth + 1}"
