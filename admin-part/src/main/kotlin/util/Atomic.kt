@@ -15,6 +15,7 @@
  */
 package com.epam.drill.plugins.test2code.util
 
+import com.epam.kodux.util.*
 import kotlinx.atomicfu.*
 import kotlinx.collections.immutable.*
 
@@ -46,7 +47,7 @@ class AtomicCache<K, V> : (K, (V?) -> V?) -> V? {
 
     fun clear() = _map.getAndUpdate { it.clear() }
 
-    override fun toString(): String = map.toString().intr()
+    override fun toString(): String = map.toString().weakIntern()
 }
 
 val <K, V> AtomicCache<K, V>.keys get() = map.keys

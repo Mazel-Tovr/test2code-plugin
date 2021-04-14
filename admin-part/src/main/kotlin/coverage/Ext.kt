@@ -19,11 +19,11 @@ import com.epam.drill.plugins.test2code.*
 import com.epam.drill.plugins.test2code.api.*
 import com.epam.drill.plugins.test2code.common.api.*
 import com.epam.drill.plugins.test2code.util.*
+import com.epam.kodux.util.*
 import kotlinx.coroutines.*
 import kotlin.math.*
 import java.lang.ref.WeakReference
-
-import java.util.WeakHashMap
+import java.util.*
 
 internal fun ExecClassData.id(): Long = id ?: className.crc64()
 
@@ -36,10 +36,10 @@ internal fun <T> List<T>.slice(probeRange: ProbeRange): List<T> = slice(probeRan
 internal fun Count.percentage(): Double = covered percentOf total
 
 internal fun Count?.arrowType(other: Count): ArrowType = this?.run {
-    (this - other).first.sign.toArrowType()
+    (this subtraction other).first.sign.toArrowType()
 } ?: ArrowType.UNCHANGED
 
-internal operator fun Count.minus(other: Count): Pair<Long, Long> = takeIf { other.total > 0 }?.run {
+internal infix fun Count.subtraction(other: Count): Pair<Long, Long> = takeIf { other.total > 0 }?.run {
     total.gcd(other.total).let { gcd ->
         val (totalLong, otherTotalLong) = total.toLong() to other.total.toLong()
         Pair(

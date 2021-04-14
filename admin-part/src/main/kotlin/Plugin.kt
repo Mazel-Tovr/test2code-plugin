@@ -27,6 +27,7 @@ import com.epam.drill.plugins.test2code.group.*
 import com.epam.drill.plugins.test2code.storage.*
 import com.epam.drill.plugins.test2code.util.*
 import com.epam.kodux.*
+import com.epam.kodux.util.*
 import kotlinx.atomicfu.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
@@ -105,7 +106,7 @@ class Plugin(
                 testType,
                 isGlobal,
                 runtimeConfig.realtime && isRealtime,
-                state.coverContext().analyzedClasses.associateBy { it.jvmClassName.intr() }
+                state.coverContext().analyzedClasses.associateBy { it.jvmClassName.weakIntern() }
             )?.run {
                 StartAgentSession(
                     payload = StartSessionPayload(

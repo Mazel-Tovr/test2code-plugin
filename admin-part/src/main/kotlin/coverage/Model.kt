@@ -104,18 +104,6 @@ data class BundleCounter(
     }
 }
 
-fun xx(){
-    Dax("x")
-}
-
-data class Dax(val ss: String){
-    companion object {
-        operator fun invoke(ss:String): Dax {
-            return Dax(ss.intr())
-        }
-    }
-}
-
 @Serializable
 data class PackageCounter(
     override val name: String,

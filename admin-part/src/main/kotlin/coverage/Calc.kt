@@ -40,7 +40,7 @@ internal fun Sequence<ExecClassData>.bundle(
     }
     val covered = probesByClasses.values.sumBy { probes -> probes.covered() }
     val packages = probesByClasses.keys.groupBy {
-        it.substringBeforeLast("/").intr()
+        it.substringBeforeLast("/").weakIntern()
     }.map { (pkgName, classNames) ->
         val classes = classNames.map { className ->
             val probes = probesByClasses.getValue(className)
@@ -50,13 +50,13 @@ internal fun Sequence<ExecClassData>.bundle(
                 count = probes.toCount(),
                 methods = classMethods.getValue(className).map {
                     val methodProbes = probes.toBooleanArray().toList().slice(it.probeRange)
-                    MethodCounter(it.name, it.desc, it.decl, "$className:${it.name}${it.desc}".intr(), methodProbes.toCount())
+                    MethodCounter(it.name, it.desc, it.decl, "$className:${it.name}${it.desc}".weakIntern(), methodProbes.toCount())
                 }
             )
         }
         val map = classNames.mapNotNull { probesByClasses[it] }
         PackageCounter(
-            name = pkgName,
+            name = pkgName.weakIntern(),
             count = Count(map.sumOf { it.covered() }, map.sumOf { it.size }),
             classCount = Count(
                 classNames.count { name -> probesByClasses.getValue(name).any { it } },

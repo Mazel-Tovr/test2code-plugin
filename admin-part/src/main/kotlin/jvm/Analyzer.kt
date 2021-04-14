@@ -6,6 +6,7 @@ import com.epam.drill.plugins.test2code.common.api.*
 import com.epam.drill.plugins.test2code.coverage.*
 import com.epam.drill.plugins.test2code.coverage.bundle
 import com.epam.drill.plugins.test2code.util.*
+import com.epam.kodux.util.*
 import java.util.*
 
 class MethodCoverage(val name: String, val desc: String) {
@@ -19,7 +20,7 @@ class MethodCoverage(val name: String, val desc: String) {
             name = name,
             desc = desc,
             decl = desc,
-            key = "$ownerClass:$name$desc".intr(),
+            key = "$ownerClass:$name$desc".weakIntern(),
             Count(covered, totalInstruction)
         )
     }
@@ -39,13 +40,13 @@ class ClassCoverage(val jvmClassName: String) {
     val methods = mutableMapOf<String, MethodCoverage>()
     var probRangeToInstruction = mutableMapOf<Int, Int>()
 
-    val packageName: String = jvmClassName.substringBeforeLast("/").intr()
-    val className: String = jvmClassName.substringAfterLast("/").intr()
+    val packageName: String = jvmClassName.substringBeforeLast("/").weakIntern()
+    val className: String = jvmClassName.substringAfterLast("/").weakIntern()
 
 
     fun method(name: String, desc: String): MethodCoverage {
-        val methodName = name.intr()
-        return methods[methodName] ?: MethodCoverage(methodName, desc.intr()).also { methods += (methodName to it) }
+        val methodName = name.weakIntern()
+        return methods[methodName] ?: MethodCoverage(methodName, desc.weakIntern()).also { methods += (methodName to it) }
     }
 
     fun toCoverageUnit(probes: BitSet): ClassCounter {
@@ -93,7 +94,7 @@ internal class JavaBundleProc(val coverContext: CoverContext) : BundleProc {
                 val classes: List<ClassCounter> =
                     it.value.map { classesCoverage[it.key]!!.toCoverageUnit(it.value.probes) }
                 PackageCounter(
-                    name = packageName.intr(),
+                    name = packageName.weakIntern(),
                     classes = classes,
                     count = Count(classes.map { it.count.covered }.sum(), packageCoverage.totalInstruction),
                     classCount = Count(classes.size, packageCoverage.totalClasses),

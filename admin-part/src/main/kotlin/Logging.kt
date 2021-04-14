@@ -17,10 +17,11 @@ package com.epam.drill.plugins.test2code
 
 import com.epam.drill.plugins.test2code.logger
 import com.epam.drill.plugins.test2code.util.*
+import com.epam.kodux.util.*
 import mu.*
 
 private val packagePrefix: String = ::logger::class.qualifiedName?.run {
-    substringBeforeLast('.').substringBeforeLast('.').intr()
+    substringBeforeLast('.').substringBeforeLast('.').weakIntern()
 }.orEmpty()
 
 internal fun logger(block: () -> Unit): KLogger = run {
@@ -37,5 +38,5 @@ internal fun Any.logger(vararg fields: String): KLogger = run {
 }
 
 private fun String.toLoggerName(): String = removePrefix(packagePrefix).run {
-    "plugins/${replace('.', '/')}".intr()
+    "plugins/${replace('.', '/')}".weakIntern()
 }

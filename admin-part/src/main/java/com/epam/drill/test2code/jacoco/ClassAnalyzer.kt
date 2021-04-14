@@ -2,6 +2,7 @@ package com.epam.drill.test2code.jacoco
 
 import com.epam.drill.plugins.test2code.jvm.*
 import com.epam.drill.plugins.test2code.util.*
+import com.epam.kodux.util.*
 import org.jacoco.core.analysis.*
 import org.jacoco.core.internal.analysis.*
 import org.jacoco.core.internal.analysis.filter.*
@@ -24,7 +25,7 @@ class JvmClassAnalyzer {
         if (reader.access and Opcodes.ACC_SYNTHETIC != 0) {
             return null
         }
-        val classCoverage = ClassCoverage(reader.className.intr())
+        val classCoverage = ClassCoverage(reader.className.weakIntern())
         val classProbesAdapter = ClassProbesAdapter(ClassAnalyzer(classCoverage), false)
         reader.accept(classProbesAdapter, 0)
         classCoverage.totalInstruction = classCoverage.methods.values.stream().map(MethodCoverage::totalInstruction)

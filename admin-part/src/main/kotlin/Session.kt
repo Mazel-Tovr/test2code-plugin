@@ -20,6 +20,7 @@ import com.epam.drill.plugins.test2code.common.api.*
 import com.epam.drill.plugins.test2code.coverage.*
 import com.epam.drill.plugins.test2code.jvm.*
 import com.epam.drill.plugins.test2code.util.*
+import com.epam.kodux.util.*
 import kotlinx.atomicfu.*
 import kotlinx.collections.immutable.*
 import kotlinx.serialization.*
@@ -67,7 +68,7 @@ class ActiveSession(
             probe.id?.let { probe } ?: probe.copy(id = probe.id())
         }.forEach { probe ->
             if (true in probe.probes) {
-                val typedTest = probe.testName.intr().typedTest(testType.intr())
+                val typedTest = probe.testName.weakIntern().typedTest(testType.weakIntern())
                 _probes.update { map ->
                     (map[typedTest] ?: persistentHashMapOf()).let { testData ->
                         val probeId = probe.id()

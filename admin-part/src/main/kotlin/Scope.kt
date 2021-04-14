@@ -22,6 +22,7 @@ import com.epam.drill.plugins.test2code.coverage.*
 import com.epam.drill.plugins.test2code.jvm.*
 import com.epam.drill.plugins.test2code.util.*
 import com.epam.kodux.*
+import com.epam.kodux.util.*
 import kotlinx.atomicfu.*
 import kotlinx.collections.immutable.*
 import kotlinx.coroutines.*
@@ -44,7 +45,7 @@ class ActiveScope(
     override val id: String = genUuid(),
     override val buildVersion: String,
     val nth: Int = 1,
-    name: String = "$DEFAULT_SCOPE_NAME $nth".intr(),
+    name: String = "$DEFAULT_SCOPE_NAME $nth".weakIntern(),
     sessions: List<FinishedSession> = emptyList(),
     realtimeCalculationCache: Boolean,
 ) : Scope {
