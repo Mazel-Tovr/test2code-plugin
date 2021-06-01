@@ -30,42 +30,42 @@ class CoverageBenchmark {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun cyclesWithoutInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeCycles::class)
+        val instrumentation = InstrumentationForTest(InvokeCycles::class, bytes)
         instrumentation.runNonInstrumentedClass()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun cyclesWithInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeCycles::class)
+        val instrumentation = InstrumentationForTest(InvokeCycles::class, bytes)
         instrumentation.runClass()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun cyclesWithCollectCoverage() {
-        val instrumentation = InstrumentationForTest(InvokeCycles::class)
+        val instrumentation = InstrumentationForTest(InvokeCycles::class, bytes)
         instrumentation.collectCoverage()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun conditionsWithoutInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class)
+        val instrumentation = InstrumentationForTest(InvokeBigConditions::class, bytes)
         instrumentation.runNonInstrumentedClass()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun conditionsWithInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class)
+        val instrumentation = InstrumentationForTest(InvokeBigConditions::class, bytes)
         instrumentation.runClass()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun conditionsWithCollectCoverage() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class)
+        val instrumentation = InstrumentationForTest(InvokeBigConditions::class, bytes)
         instrumentation.collectCoverage()
     }
 

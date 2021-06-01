@@ -25,7 +25,7 @@ import org.jacoco.core.data.*
 import org.jacoco.core.internal.data.*
 import kotlin.reflect.*
 
-class InstrumentationForTest(kClass: KClass<*>) {
+class InstrumentationForTest(kClass: Class<*>, bytes: ByteArray? = null) {
 
     companion object {
         const val sessionId = "xxx"
@@ -48,9 +48,9 @@ class InstrumentationForTest(kClass: KClass<*>) {
 
     val memoryClassLoader = MemoryClassLoader()
 
-    val targetClass = kClass.java
+    val targetClass = kClass
 
-    val originalBytes = targetClass.readBytes()
+    val originalBytes = bytes ?: targetClass.readBytes()
 
     val originalClassId = CRC64.classId(originalBytes)
 
@@ -106,7 +106,7 @@ class MemoryClassLoader : ClassLoader() {
         definitions[name] = bytes
     }
 
-    override fun loadClass(name: String?, resolve: Boolean): Class<*> {
+    public override fun loadClass(name: String?, resolve: Boolean): Class<*> {
         val bytes = definitions[name]
         return if (bytes != null) {
             defineClass(name, bytes, 0, bytes.size)

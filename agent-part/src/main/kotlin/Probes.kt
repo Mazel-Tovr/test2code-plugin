@@ -26,7 +26,7 @@ import kotlin.coroutines.*
  * Provides boolean array for the probe.
  * Implementations must be kotlin singleton objects.
  */
-typealias ProbeArrayProvider = (Long, String, Int) -> Probes
+typealias ProbeArrayProvider = (Long, String, Int, Int, Int) -> Probes
 
 typealias RealtimeHandler = (Sequence<ExecDatum>) -> Unit
 
@@ -36,7 +36,7 @@ interface SessionProbeArrayProvider : ProbeArrayProvider {
         sessionId: String,
         isGlobal: Boolean,
         testName: String? = null,
-        realtimeHandler: RealtimeHandler = {}
+        realtimeHandler: RealtimeHandler = {},
     )
 
     fun stop(sessionId: String): Sequence<ExecDatum>?
@@ -51,7 +51,7 @@ class ExecDatum(
     val id: Long,
     val name: String,
     val probes: Probes,
-    val testName: String = ""
+    val testName: String = "",
 )
 
 fun ExecDatum.toExecClassData() = ExecClassData(
@@ -74,7 +74,7 @@ internal object ProbeWorker : CoroutineScope {
  * TODO ad hoc implementation, rewrite to something more descent
  */
 class ExecRuntime(
-    realtimeHandler: RealtimeHandler
+    realtimeHandler: RealtimeHandler,
 ) : (Long, String, Int, String) -> Probes {
 
     private val _execData = atomic(persistentHashMapOf<String, ExecData>())
@@ -90,7 +90,7 @@ class ExecRuntime(
         id: Long,
         name: String,
         probeCount: Int,
-        testName: String
+        testName: String,
     ): Probes = _execData.updateAndGet { tests ->
         (tests[testName] ?: persistentHashMapOf()).let { execData ->
             if (id !in execData) {
@@ -105,7 +105,7 @@ class ExecRuntime(
                 tests.put(testName, mutatedData)
             } else tests
         }
-    }.getValue(testName).getValue(id).probes
+    }.getValue(testName).getValue(id).probes.also { it.size(); it.length() }
 
     fun collect(): Sequence<ExecDatum> = _execData.getAndUpdate { it.clear() }.values.asSequence().run {
         flatMap { it.values.asSequence() }
@@ -122,7 +122,7 @@ class ExecRuntime(
  * The provider must be a Kotlin singleton object, otherwise the instrumented probe calls will fail.
  */
 open class SimpleSessionProbeArrayProvider(
-    defaultContext: AgentContext? = null
+    defaultContext: AgentContext? = null,
 ) : SessionProbeArrayProvider {
 
     var defaultContext: AgentContext?
@@ -137,7 +137,7 @@ open class SimpleSessionProbeArrayProvider(
 
     private val _context = atomic<AgentContext?>(null)
 
-    private val _globalContext = atomic<AgentContext?>(null)
+    private val _globalContext =  atomic<AgentContext?>(null)
 
     private val _runtimes = atomic(persistentHashMapOf<String, ExecRuntime>())
 
@@ -146,7 +146,9 @@ open class SimpleSessionProbeArrayProvider(
     override fun invoke(
         id: Long,
         name: String,
-        probeCount: Int
+        probeCount: Int,
+        startIndex: Int,
+        endIndex: Int,
     ): Probes = _context.value?.let {
         it(id, name, probeCount)
     } ?: _globalContext.value?.let {
@@ -156,7 +158,7 @@ open class SimpleSessionProbeArrayProvider(
     private operator fun AgentContext.invoke(
         id: Long,
         name: String,
-        probeCount: Int
+        probeCount: Int,
     ): Probes? = run {
         val sessionId = this()
         runtimes[sessionId]?.let { sessionRuntime: ExecRuntime ->
@@ -169,7 +171,7 @@ open class SimpleSessionProbeArrayProvider(
         sessionId: String,
         isGlobal: Boolean,
         testName: String?,
-        realtimeHandler: RealtimeHandler
+        realtimeHandler: RealtimeHandler,
     ) {
         if (isGlobal) {
             _globalContext.value = GlobalContext(sessionId, testName)
@@ -233,7 +235,7 @@ open class SimpleSessionProbeArrayProvider(
 
 private class GlobalContext(
     private val sessionId: String,
-    private val testName: String?
+    private val testName: String?,
 ) : AgentContext {
     override fun get(key: String): String? = testName?.takeIf { key == DRIlL_TEST_NAME }
 

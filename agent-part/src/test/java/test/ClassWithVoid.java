@@ -15,6 +15,8 @@
  */
 package test;
 
+
+
 public class ClassWithVoid implements Runnable {
     @Override
     public void run() {
