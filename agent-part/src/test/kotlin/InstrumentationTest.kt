@@ -29,7 +29,7 @@ class InstrumentationTest {
     @Test
     fun test() {
         val bytes =
-            File("D:\\Github\\Drill\\test2code-plugin\\agent-part\\src\\test\\resources\\OwnerController.class").readBytes()
+            File("D:\\GitHub\\Drill\\test2code-plugin\\agent-part\\src\\test\\resources\\OwnerController.class").readBytes()
 
         val cl = MemoryClassLoader()
         cl.addDefinition("org.springframework.samples.petclinic.owner.OwnerController", bytes)

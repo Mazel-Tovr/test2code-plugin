@@ -27,46 +27,46 @@ import java.util.concurrent.*
 @Measurement(iterations = 15, timeUnit = TimeUnit.MILLISECONDS)
 class CoverageBenchmark {
 
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    fun cyclesWithoutInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeCycles::class, bytes)
-        instrumentation.runNonInstrumentedClass()
-    }
+//    @Benchmark
+//    @BenchmarkMode(Mode.AverageTime)
+//    fun cyclesWithoutInstrumentation() {
+//        val instrumentation = InstrumentationForTest(InvokeCycles::class.java)
+//        instrumentation.runNonInstrumentedClass()
+//    }
+//
+//    @Benchmark
+//    @BenchmarkMode(Mode.AverageTime)
+//    fun cyclesWithInstrumentation() {
+//        val instrumentation = InstrumentationForTest(InvokeCycles::class.java)
+//        instrumentation.runClass()
+//    }
 
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    fun cyclesWithInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeCycles::class, bytes)
-        instrumentation.runClass()
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    fun cyclesWithCollectCoverage() {
-        val instrumentation = InstrumentationForTest(InvokeCycles::class, bytes)
-        instrumentation.collectCoverage()
-    }
+//    @Benchmark
+//    @BenchmarkMode(Mode.AverageTime)
+//    fun cyclesWithCollectCoverage() {
+//        val instrumentation = InstrumentationForTest(InvokeCycles::class.java)
+//        instrumentation.collectCoverage()
+//    }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun conditionsWithoutInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class, bytes)
+        val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
         instrumentation.runNonInstrumentedClass()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     fun conditionsWithInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class, bytes)
+        val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
         instrumentation.runClass()
     }
 
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    fun conditionsWithCollectCoverage() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class, bytes)
-        instrumentation.collectCoverage()
-    }
+//    @Benchmark
+//    @BenchmarkMode(Mode.AverageTime)
+//    fun conditionsWithCollectCoverage() {
+//        val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
+//        instrumentation.collectCoverage()
+//    }
 
 }

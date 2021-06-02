@@ -21,6 +21,7 @@ import drill.jacoco.BitSetProbeInserter.*
 import org.jacoco.core.internal.flow.*
 import org.jacoco.core.internal.instr.*
 import org.objectweb.asm.*
+import java.lang.RuntimeException
 
 /**
  * Instrumenter type
@@ -36,7 +37,7 @@ fun instrumenter(probeArrayProvider: ProbeArrayProvider, logger: Logger): DrillI
 
 private class CustomInstrumenter(
     private val probeArrayProvider: ProbeArrayProvider,
-    private val logger: Logger
+    private val logger: Logger,
 ) : DrillInstrumenter {
 
     override fun invoke(className: String, classId: Long, classBody: ByteArray): ByteArray? = try {
@@ -52,18 +53,20 @@ private class CustomInstrumenter(
         //count probes before transformation
         val counter = ProbeCounter()
         val reader = InstrSupport.classReaderFor(classBody)
-        reader.accept(ClassProbesAdapter(counter, false), 0)
+        val drillClassProbesAdapter = DrillClassProbesAdapter(counter, false)
+        reader.accept(drillClassProbesAdapter, 0)
 
         val strategy = DrillProbeStrategy(
             probeArrayProvider,
             className,
             classId,
+            drillClassProbesAdapter.methodProbes,
             counter.count
         )
         val writer = object : ClassWriter(reader, 0) {
             override fun getCommonSuperClass(type1: String, type2: String): String = throw IllegalStateException()
         }
-        val visitor = ClassProbesAdapter(
+        val visitor = DrillClassProbesAdapter(
             DrillClassInstrumenter(strategy, className, writer),
             InstrSupport.needsFrames(version)
         )
@@ -77,7 +80,7 @@ private class ProbeCounter : ClassProbesVisitor() {
         private set
 
     override fun visitMethod(
-        access: Int, name: String?, desc: String?, signature: String?, exceptions: Array<out String>?
+        access: Int, name: String?, desc: String?, signature: String?, exceptions: Array<out String>?,
     ): MethodProbesVisitor? {
         return null
     }
@@ -89,32 +92,40 @@ private class ProbeCounter : ClassProbesVisitor() {
 }
 
 
-private class DrillProbeStrategy(
+internal class DrillProbeStrategy(
     private val probeArrayProvider: ProbeArrayProvider,
     private val className: String,
     private val classId: Long,
-    private val probeCount: Int
+    private val methodToProbe: Map<String, Int>,
+    private val totalProbes: Int,
 ) : IProbeArrayStrategy {
-    override fun storeInstance(mv: MethodVisitor?, clinit: Boolean, variable: Int): Int = mv!!.run {
+
+    fun storeInstanceNewVersion(mv: MethodVisitor?, clinit: Boolean, variable: Int, methodId: String) = mv!!.run {
         val drillClassName = probeArrayProvider.javaClass.name.replace('.', '/')
         visitFieldInsn(Opcodes.GETSTATIC, drillClassName, "INSTANCE", "L$drillClassName;")
         // Stack[0]: Lcom/epam/drill/jacoco/Stuff;
-
+        val probeOnCurrentMethod = methodToProbe[methodId] ?: throw RuntimeException("CHELL Tbl... code y tebya govono koroche offai naxyi")
         visitLdcInsn(classId)
         visitLdcInsn(className)
-        visitLdcInsn(probeCount + 1)//bitset magic
+        visitLdcInsn(probeOnCurrentMethod  + 1)//bitset magic
+        visitLdcInsn(methodId)
         visitMethodInsn(
-            Opcodes.INVOKEVIRTUAL, drillClassName, "invoke", "(JLjava/lang/String;I)L$PROBE_IMPL;",
+            Opcodes.INVOKEVIRTUAL, drillClassName, "invoke", "(JLjava/lang/String;ILjava/lang/String;)L$PROBE_IMPL;",
             false
         )
         visitVarInsn(Opcodes.ASTORE, variable)
-        mv.setTrueToLastIndex(variable)//bitset magic
-        5 //stack size
+        mv.setTrueToLastIndex(variable,probeOnCurrentMethod)//bitset magic
+        6 //stack size  TODO What does it mean
     }
 
-    private fun MethodVisitor.setTrueToLastIndex(variable: Int) {
+    override fun storeInstance(mv: MethodVisitor?, clinit: Boolean, variable: Int): Int = mv!!.run {
+        System.err.println("storeInstance SHOULD NOT BE USED !!!!!! ")
+        5
+    }
+
+    private fun MethodVisitor.setTrueToLastIndex(variable: Int, probeOnCurrentMethod: Int) {
         visitVarInsn(Opcodes.ALOAD, variable)
-        InstrSupport.push(this, probeCount)
+        InstrSupport.push(this, probeOnCurrentMethod)
         visitMethodInsn(
             Opcodes.INVOKEVIRTUAL, PROBE_IMPL, "set", "(I)V",
             false
@@ -127,7 +138,7 @@ private class DrillProbeStrategy(
 class DrillClassInstrumenter(
     private val probeArrayStrategy: IProbeArrayStrategy,
     private val clazzName: String,
-    cv: ClassVisitor
+    cv: ClassVisitor,
 ) : ClassInstrumenter(probeArrayStrategy, cv) {
 
     override fun visitMethod(
@@ -135,7 +146,7 @@ class DrillClassInstrumenter(
         name: String?,
         desc: String?,
         signature: String?,
-        exceptions: Array<out String>?
+        exceptions: Array<out String>?,
     ): MethodProbesVisitor {
         InstrSupport.assertNotInstrumented(name, clazzName)
         val mv = cv.visitMethod(

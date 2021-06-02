@@ -26,7 +26,7 @@ import kotlin.coroutines.*
  * Provides boolean array for the probe.
  * Implementations must be kotlin singleton objects.
  */
-typealias ProbeArrayProvider = (Long, String, Int, Int, Int) -> Probes
+typealias ProbeArrayProvider = (ClassId, ClassName, Int, MethodId) -> Probes
 
 typealias RealtimeHandler = (Sequence<ExecDatum>) -> Unit
 
@@ -54,6 +54,25 @@ class ExecDatum(
     val testName: String = "",
 )
 
+//TODO STUB
+fun Iterable<MethodExecDatum>.merge(): Probes = Probes() //STUB
+
+//TODO STUB
+fun ClassId.merge(methodExecData: MethodExecData): ExecDatum = methodExecData.values.let {
+    it.first().run {
+        ExecDatum(id, name, it.merge(), testName)
+    }
+}
+
+//TODO class/string pool might improve memory usage
+class MethodExecDatum(
+    val id: Long,
+    val name: String,
+    val probes: Probes,
+    val testName: String = "",
+)
+
+
 fun ExecDatum.toExecClassData() = ExecClassData(
     id = id,
     className = name,
@@ -61,7 +80,6 @@ fun ExecDatum.toExecClassData() = ExecClassData(
     testName = testName
 )
 
-typealias ExecData = PersistentMap<Long, ExecDatum>
 
 internal object ProbeWorker : CoroutineScope {
     override val coroutineContext: CoroutineContext = run {
@@ -69,15 +87,30 @@ internal object ProbeWorker : CoroutineScope {
     }
 }
 
+typealias MethodExecData = PersistentMap<MethodId, MethodExecDatum>
+typealias ClassExecData = PersistentMap<ClassId, MethodExecData>
+typealias ClassName = String
+typealias TestName = String
+typealias ClassId = Long
+typealias MethodId = String
+
 /**
  * A container for session runtime data and optionally runtime data of tests
  * TODO ad hoc implementation, rewrite to something more descent
  */
 class ExecRuntime(
     realtimeHandler: RealtimeHandler,
-) : (Long, String, Int, String) -> Probes {
+) : (ClassId, ClassName, Int, String, MethodId) -> Probes {
 
-    private val _execData = atomic(persistentHashMapOf<String, ExecData>())
+    fun collect(): Sequence<ExecDatum> = _execData.getAndUpdate { it.clear() }.values.asSequence().run {
+        flatMap { classData ->
+            classData.map { (classId, probes) ->
+                classId.merge(probes)
+            }
+        }
+    }
+
+    private val _execData = atomic(persistentHashMapOf<TestName, ClassExecData>())
 
     private val job = ProbeWorker.launch {
         while (true) {
@@ -86,29 +119,42 @@ class ExecRuntime(
         }
     }
 
+
     override fun invoke(
-        id: Long,
-        name: String,
+        id: ClassId,
+        name: ClassName,
         probeCount: Int,
-        testName: String,
+        testName: TestName,
+        methodId: MethodId,
     ): Probes = _execData.updateAndGet { tests ->
-        (tests[testName] ?: persistentHashMapOf()).let { execData ->
-            if (id !in execData) {
-                val mutatedData = execData.put(
-                    id, ExecDatum(
+        (tests[testName] ?: persistentHashMapOf()).let { classExecData ->
+            val mutatedData = if (id !in classExecData) {
+                classExecData.put(id, persistentHashMapOf(methodId to MethodExecDatum(
+                    id = id,
+                    name = name,
+                    probes = Probes(probeCount),
+                    testName = testName
+                )))
+            } else {
+                if (methodId !in classExecData[id]!!) {
+                    classExecData.put(id, classExecData[id]!!.put(methodId, MethodExecDatum(
                         id = id,
                         name = name,
                         probes = Probes(probeCount),
                         testName = testName
-                    )
-                )
-                tests.put(testName, mutatedData)
-            } else tests
+                    )))
+                } else {
+                    classExecData
+                }
+            }
+            tests.put(testName, mutatedData)
         }
-    }.getValue(testName).getValue(id).probes.also { it.size(); it.length() }
-
-    fun collect(): Sequence<ExecDatum> = _execData.getAndUpdate { it.clear() }.values.asSequence().run {
-        flatMap { it.values.asSequence() }
+    }.getValue(testName).getValue(id).getValue(methodId).probes.run {
+        for (i in 0..length()) {
+            if (!get(i))
+                return@run this
+        }
+        return@run ProbesStub()
     }
 
     fun close() {
@@ -137,7 +183,7 @@ open class SimpleSessionProbeArrayProvider(
 
     private val _context = atomic<AgentContext?>(null)
 
-    private val _globalContext =  atomic<AgentContext?>(null)
+    private val _globalContext = atomic<AgentContext?>(null)
 
     private val _runtimes = atomic(persistentHashMapOf<String, ExecRuntime>())
 
@@ -147,23 +193,23 @@ open class SimpleSessionProbeArrayProvider(
         id: Long,
         name: String,
         probeCount: Int,
-        startIndex: Int,
-        endIndex: Int,
+        methodId: String,
     ): Probes = _context.value?.let {
-        it(id, name, probeCount)
+        it(id, name, probeCount, methodId)
     } ?: _globalContext.value?.let {
-        it(id, name, probeCount)
+        it(id, name, probeCount, methodId)
     } ?: _stubProbes.value
 
     private operator fun AgentContext.invoke(
         id: Long,
         name: String,
         probeCount: Int,
+        methodId: String,
     ): Probes? = run {
         val sessionId = this()
         runtimes[sessionId]?.let { sessionRuntime: ExecRuntime ->
             val testName = this[DRIlL_TEST_NAME] ?: "unspecified"
-            sessionRuntime(id, name, probeCount, testName)
+            sessionRuntime(id, name, probeCount, testName, methodId)
         }
     }
 

@@ -1,0 +1,792 @@
+Classfile /D:/Github/Drill/test2code-plugin/agent-part/src/test/resources/InstrumentOwnerController.class
+  Last modified May 31, 2021; size 6798 bytes
+  MD5 checksum e8539e066df68602ddc7e2eafad8dd5d
+  Compiled from "OwnerController.java"
+class org.springframework.samples.petclinic.owner.OwnerController
+  minor version: 0
+  major version: 52
+  flags: ACC_SUPER
+Constant pool:
+    #1 = Methodref          #45.#115      // java/lang/Object."<init>":()V
+    #2 = Fieldref           #10.#116      // org/springframework/samples/petclinic/owner/OwnerController.owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+    #3 = Class              #117          // java/lang/String
+    #4 = String             #118          // id
+    #5 = Methodref          #119.#120     // org/springframework/web/bind/WebDataBinder.setDisallowedFields:([Ljava/lang/String;)V
+    #6 = Class              #121          // org/springframework/samples/petclinic/owner/Owner
+    #7 = Methodref          #6.#115       // org/springframework/samples/petclinic/owner/Owner."<init>":()V
+    #8 = String             #70           // owner
+    #9 = InterfaceMethodref #122.#123     // java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+   #10 = Class              #124          // org/springframework/samples/petclinic/owner/OwnerController
+   #11 = String             #125          // owners/createOrUpdateOwnerForm
+   #12 = InterfaceMethodref #126.#127     // org/springframework/validation/BindingResult.hasErrors:()Z
+   #13 = InterfaceMethodref #128.#129     // org/springframework/samples/petclinic/owner/OwnerRepository.save:(Lorg/springframework/samples/petclinic/owner/Owner;)V
+   #14 = Class              #130          // java/lang/StringBuilder
+   #15 = Methodref          #14.#115      // java/lang/StringBuilder."<init>":()V
+   #16 = String             #131          // redirect:/owners/
+   #17 = Methodref          #14.#132      // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #18 = Methodref          #6.#133       // org/springframework/samples/petclinic/owner/Owner.getId:()Ljava/lang/Integer;
+   #19 = Methodref          #14.#134      // java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+   #20 = Methodref          #14.#135      // java/lang/StringBuilder.toString:()Ljava/lang/String;
+   #21 = String             #136          // owners/findOwners
+   #22 = Methodref          #6.#137       // org/springframework/samples/petclinic/owner/Owner.getLastName:()Ljava/lang/String;
+   #23 = String             #138          //
+   #24 = Methodref          #6.#139       // org/springframework/samples/petclinic/owner/Owner.setLastName:(Ljava/lang/String;)V
+   #25 = InterfaceMethodref #128.#140     // org/springframework/samples/petclinic/owner/OwnerRepository.findByLastName:(Ljava/lang/String;)Ljava/util/Collection;
+   #26 = InterfaceMethodref #141.#142     // java/util/Collection.isEmpty:()Z
+   #27 = String             #143          // lastName
+   #28 = String             #144          // notFound
+   #29 = String             #145          // not found
+   #30 = InterfaceMethodref #126.#146     // org/springframework/validation/BindingResult.rejectValue:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+   #31 = InterfaceMethodref #141.#147     // java/util/Collection.size:()I
+   #32 = InterfaceMethodref #141.#148     // java/util/Collection.iterator:()Ljava/util/Iterator;
+   #33 = InterfaceMethodref #149.#150     // java/util/Iterator.next:()Ljava/lang/Object;
+   #34 = String             #151          // selections
+   #35 = String             #152          // owners/ownersList
+   #36 = Methodref          #153.#154     // java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+   #37 = InterfaceMethodref #128.#155     // org/springframework/samples/petclinic/owner/OwnerRepository.findById:(Ljava/lang/Integer;)Lorg/springframework/samples/petclinic/owner/Owner;
+   #38 = InterfaceMethodref #156.#157     // org/springframework/ui/Model.addAttribute:(Ljava/lang/Object;)Lorg/springframework/ui/Model;
+   #39 = Methodref          #6.#158       // org/springframework/samples/petclinic/owner/Owner.setId:(Ljava/lang/Integer;)V
+   #40 = String             #159          // redirect:/owners/{ownerId}
+   #41 = Class              #160          // org/springframework/web/servlet/ModelAndView
+   #42 = String             #161          // owners/ownerDetails
+   #43 = Methodref          #41.#162      // org/springframework/web/servlet/ModelAndView."<init>":(Ljava/lang/String;)V
+   #44 = Methodref          #41.#163      // org/springframework/web/servlet/ModelAndView.addObject:(Ljava/lang/Object;)Lorg/springframework/web/servlet/ModelAndView;
+   #45 = Class              #164          // java/lang/Object
+   #46 = Utf8               VIEWS_OWNER_CREATE_OR_UPDATE_FORM
+   #47 = Utf8               Ljava/lang/String;
+   #48 = Utf8               ConstantValue
+   #49 = Utf8               owners
+   #50 = Utf8               Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+   #51 = Utf8               <init>
+   #52 = Utf8               (Lorg/springframework/samples/petclinic/owner/OwnerRepository;)V
+   #53 = Utf8               Code
+   #54 = Utf8               LineNumberTable
+   #55 = Utf8               LocalVariableTable
+   #56 = Utf8               this
+   #57 = Utf8               Lorg/springframework/samples/petclinic/owner/OwnerController;
+   #58 = Utf8               clinicService
+   #59 = Utf8               MethodParameters
+   #60 = Utf8               setAllowedFields
+   #61 = Utf8               (Lorg/springframework/web/bind/WebDataBinder;)V
+   #62 = Utf8               dataBinder
+   #63 = Utf8               Lorg/springframework/web/bind/WebDataBinder;
+   #64 = Utf8               RuntimeVisibleAnnotations
+   #65 = Utf8               Lorg/springframework/web/bind/annotation/InitBinder;
+   #66 = Utf8               initCreationForm
+   #67 = Utf8               (Ljava/util/Map;)Ljava/lang/String;
+   #68 = Utf8               model
+   #69 = Utf8               Ljava/util/Map;
+   #70 = Utf8               owner
+   #71 = Utf8               Lorg/springframework/samples/petclinic/owner/Owner;
+   #72 = Utf8               LocalVariableTypeTable
+   #73 = Utf8               Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;
+   #74 = Utf8               Signature
+   #75 = Utf8               (Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;)Ljava/lang/String;
+   #76 = Utf8               Lorg/springframework/web/bind/annotation/GetMapping;
+   #77 = Utf8               value
+   #78 = Utf8               /owners/new
+   #79 = Utf8               processCreationForm
+   #80 = Utf8               (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;)Ljava/lang/String;
+   #81 = Utf8               result
+   #82 = Utf8               Lorg/springframework/validation/BindingResult;
+   #83 = Utf8               StackMapTable
+   #84 = Utf8               Lorg/springframework/web/bind/annotation/PostMapping;
+   #85 = Utf8               RuntimeVisibleTypeAnnotations
+   #86 = Utf8               Ljavax/validation/Valid;
+   #87 = Utf8               RuntimeVisibleParameterAnnotations
+   #88 = Utf8               initFindForm
+   #89 = Utf8               /owners/find
+   #90 = Utf8               processFindForm
+   #91 = Utf8               (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;Ljava/util/Map;)Ljava/lang/String;
+   #92 = Utf8               results
+   #93 = Utf8               Ljava/util/Collection;
+   #94 = Utf8               Ljava/util/Collection<Lorg/springframework/samples/petclinic/owner/Owner;>;
+   #95 = Class              #165          // java/util/Collection
+   #96 = Utf8               (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;)Ljava/lang/String;
+   #97 = Utf8               /owners
+   #98 = Utf8               initUpdateOwnerForm
+   #99 = Utf8               (ILorg/springframework/ui/Model;)Ljava/lang/String;
+  #100 = Utf8               ownerId
+  #101 = Utf8               I
+  #102 = Utf8               Lorg/springframework/ui/Model;
+  #103 = Utf8               /owners/{ownerId}/edit
+  #104 = Utf8               Lorg/springframework/web/bind/annotation/PathVariable;
+  #105 = Utf8               processUpdateOwnerForm
+  #106 = Utf8               (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;I)Ljava/lang/String;
+  #107 = Utf8               showOwner
+  #108 = Utf8               (I)Lorg/springframework/web/servlet/ModelAndView;
+  #109 = Utf8               mav
+  #110 = Utf8               Lorg/springframework/web/servlet/ModelAndView;
+  #111 = Utf8               /owners/{ownerId}
+  #112 = Utf8               SourceFile
+  #113 = Utf8               OwnerController.java
+  #114 = Utf8               Lorg/springframework/stereotype/Controller;
+  #115 = NameAndType        #51:#166      // "<init>":()V
+  #116 = NameAndType        #49:#50       // owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+  #117 = Utf8               java/lang/String
+  #118 = Utf8               id
+  #119 = Class              #167          // org/springframework/web/bind/WebDataBinder
+  #120 = NameAndType        #168:#169     // setDisallowedFields:([Ljava/lang/String;)V
+  #121 = Utf8               org/springframework/samples/petclinic/owner/Owner
+  #122 = Class              #170          // java/util/Map
+  #123 = NameAndType        #171:#172     // put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  #124 = Utf8               org/springframework/samples/petclinic/owner/OwnerController
+  #125 = Utf8               owners/createOrUpdateOwnerForm
+  #126 = Class              #173          // org/springframework/validation/BindingResult
+  #127 = NameAndType        #174:#175     // hasErrors:()Z
+  #128 = Class              #176          // org/springframework/samples/petclinic/owner/OwnerRepository
+  #129 = NameAndType        #177:#178     // save:(Lorg/springframework/samples/petclinic/owner/Owner;)V
+  #130 = Utf8               java/lang/StringBuilder
+  #131 = Utf8               redirect:/owners/
+  #132 = NameAndType        #179:#180     // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #133 = NameAndType        #181:#182     // getId:()Ljava/lang/Integer;
+  #134 = NameAndType        #179:#183     // append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #135 = NameAndType        #184:#185     // toString:()Ljava/lang/String;
+  #136 = Utf8               owners/findOwners
+  #137 = NameAndType        #186:#185     // getLastName:()Ljava/lang/String;
+  #138 = Utf8
+  #139 = NameAndType        #187:#188     // setLastName:(Ljava/lang/String;)V
+  #140 = NameAndType        #189:#190     // findByLastName:(Ljava/lang/String;)Ljava/util/Collection;
+  #141 = Class              #165          // java/util/Collection
+  #142 = NameAndType        #191:#175     // isEmpty:()Z
+  #143 = Utf8               lastName
+  #144 = Utf8               notFound
+  #145 = Utf8               not found
+  #146 = NameAndType        #192:#193     // rejectValue:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+  #147 = NameAndType        #194:#195     // size:()I
+  #148 = NameAndType        #196:#197     // iterator:()Ljava/util/Iterator;
+  #149 = Class              #198          // java/util/Iterator
+  #150 = NameAndType        #199:#200     // next:()Ljava/lang/Object;
+  #151 = Utf8               selections
+  #152 = Utf8               owners/ownersList
+  #153 = Class              #201          // java/lang/Integer
+  #154 = NameAndType        #202:#203     // valueOf:(I)Ljava/lang/Integer;
+  #155 = NameAndType        #204:#205     // findById:(Ljava/lang/Integer;)Lorg/springframework/samples/petclinic/owner/Owner;
+  #156 = Class              #206          // org/springframework/ui/Model
+  #157 = NameAndType        #207:#208     // addAttribute:(Ljava/lang/Object;)Lorg/springframework/ui/Model;
+  #158 = NameAndType        #209:#210     // setId:(Ljava/lang/Integer;)V
+  #159 = Utf8               redirect:/owners/{ownerId}
+  #160 = Utf8               org/springframework/web/servlet/ModelAndView
+  #161 = Utf8               owners/ownerDetails
+  #162 = NameAndType        #51:#188      // "<init>":(Ljava/lang/String;)V
+  #163 = NameAndType        #211:#212     // addObject:(Ljava/lang/Object;)Lorg/springframework/web/servlet/ModelAndView;
+  #164 = Utf8               java/lang/Object
+  #165 = Utf8               java/util/Collection
+  #166 = Utf8               ()V
+  #167 = Utf8               org/springframework/web/bind/WebDataBinder
+  #168 = Utf8               setDisallowedFields
+  #169 = Utf8               ([Ljava/lang/String;)V
+  #170 = Utf8               java/util/Map
+  #171 = Utf8               put
+  #172 = Utf8               (Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+  #173 = Utf8               org/springframework/validation/BindingResult
+  #174 = Utf8               hasErrors
+  #175 = Utf8               ()Z
+  #176 = Utf8               org/springframework/samples/petclinic/owner/OwnerRepository
+  #177 = Utf8               save
+  #178 = Utf8               (Lorg/springframework/samples/petclinic/owner/Owner;)V
+  #179 = Utf8               append
+  #180 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #181 = Utf8               getId
+  #182 = Utf8               ()Ljava/lang/Integer;
+  #183 = Utf8               (Ljava/lang/Object;)Ljava/lang/StringBuilder;
+  #184 = Utf8               toString
+  #185 = Utf8               ()Ljava/lang/String;
+  #186 = Utf8               getLastName
+  #187 = Utf8               setLastName
+  #188 = Utf8               (Ljava/lang/String;)V
+  #189 = Utf8               findByLastName
+  #190 = Utf8               (Ljava/lang/String;)Ljava/util/Collection;
+  #191 = Utf8               isEmpty
+  #192 = Utf8               rejectValue
+  #193 = Utf8               (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+  #194 = Utf8               size
+  #195 = Utf8               ()I
+  #196 = Utf8               iterator
+  #197 = Utf8               ()Ljava/util/Iterator;
+  #198 = Utf8               java/util/Iterator
+  #199 = Utf8               next
+  #200 = Utf8               ()Ljava/lang/Object;
+  #201 = Utf8               java/lang/Integer
+  #202 = Utf8               valueOf
+  #203 = Utf8               (I)Ljava/lang/Integer;
+  #204 = Utf8               findById
+  #205 = Utf8               (Ljava/lang/Integer;)Lorg/springframework/samples/petclinic/owner/Owner;
+  #206 = Utf8               org/springframework/ui/Model
+  #207 = Utf8               addAttribute
+  #208 = Utf8               (Ljava/lang/Object;)Lorg/springframework/ui/Model;
+  #209 = Utf8               setId
+  #210 = Utf8               (Ljava/lang/Integer;)V
+  #211 = Utf8               addObject
+  #212 = Utf8               (Ljava/lang/Object;)Lorg/springframework/web/servlet/ModelAndView;
+  #213 = Utf8               com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider
+  #214 = Class              #213          // com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider
+  #215 = Utf8               INSTANCE
+  #216 = Utf8               Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+  #217 = NameAndType        #215:#216     // INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+  #218 = Fieldref           #214.#217     // com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+  #219 = Long               6861585370234076436l
+  #221 = Utf8               org.springframework.samples.petclinic.owner.OwnerController
+  #222 = String             #221          // org.springframework.samples.petclinic.owner.OwnerController
+  #223 = Integer            26
+  #224 = Utf8               invoke
+  #225 = Utf8               (JLjava/lang/String;I)Ljava/util/BitSet;
+  #226 = NameAndType        #224:#225     // invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+  #227 = Methodref          #214.#226     // com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+  #228 = Utf8               java/util/BitSet
+  #229 = Class              #228          // java/util/BitSet
+  #230 = Utf8               set
+  #231 = Utf8               (I)V
+  #232 = NameAndType        #230:#231     // set:(I)V
+  #233 = Methodref          #229.#232     // java/util/BitSet.set:(I)V
+{
+  public org.springframework.samples.petclinic.owner.OwnerController(org.springframework.samples.petclinic.owner.OwnerRepository);
+    descriptor: (Lorg/springframework/samples/petclinic/owner/OwnerRepository;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=3, args_size=2
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore_2
+        14: aload_2
+        15: bipush        25
+        17: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        20: aload_0
+        21: invokespecial #1                  // Method java/lang/Object."<init>":()V
+        24: aload_0
+        25: aload_1
+        26: putfield      #2                  // Field owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+        29: aload_2
+        30: iconst_0
+        31: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        34: return
+      LineNumberTable:
+        line 45: 20
+        line 46: 24
+        line 47: 29
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           20      15     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           20      15     1 clinicService   Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+    MethodParameters:
+      Name                           Flags
+      clinicService
+
+  public void setAllowedFields(org.springframework.web.bind.WebDataBinder);
+    descriptor: (Lorg/springframework/web/bind/WebDataBinder;)V
+    flags: ACC_PUBLIC
+    Code:
+      stack=8, locals=3, args_size=2
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore_2
+        14: aload_2
+        15: bipush        25
+        17: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        20: aload_1
+        21: iconst_1
+        22: anewarray     #3                  // class java/lang/String
+        25: dup
+        26: iconst_0
+        27: ldc           #4                  // String id
+        29: aastore
+        30: invokevirtual #5                  // Method org/springframework/web/bind/WebDataBinder.setDisallowedFields:([Ljava/lang/String;)V
+        33: aload_2
+        34: iconst_1
+        35: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        38: return
+      LineNumberTable:
+        line 51: 20
+        line 52: 33
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           20      19     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           20      19     1 dataBinder   Lorg/springframework/web/bind/WebDataBinder;
+    RuntimeVisibleAnnotations:
+      0: #65()
+    MethodParameters:
+      Name                           Flags
+      dataBinder
+
+  public java.lang.String initCreationForm(java.util.Map<java.lang.String, java.lang.Object>);
+    descriptor: (Ljava/util/Map;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=6, locals=4, args_size=2
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore_2
+        14: aload_2
+        15: bipush        25
+        17: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        20: new           #6                  // class org/springframework/samples/petclinic/owner/Owner
+        23: dup
+        24: invokespecial #7                  // Method org/springframework/samples/petclinic/owner/Owner."<init>":()V
+        27: astore_3
+        28: aload_2
+        29: iconst_2
+        30: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        33: aload_1
+        34: ldc           #8                  // String owner
+        36: aload_3
+        37: invokeinterface #9,  3            // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+        42: pop
+        43: ldc           #11                 // String owners/createOrUpdateOwnerForm
+        45: aload_2
+        46: iconst_3
+        47: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        50: areturn
+      LineNumberTable:
+        line 56: 20
+        line 57: 33
+        line 58: 43
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           20      31     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           20      31     1 model   Ljava/util/Map;
+           33      18     3 owner   Lorg/springframework/samples/petclinic/owner/Owner;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+           20      31     1 model   Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;
+    Signature: #75                          // (Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;)Ljava/lang/String;
+    RuntimeVisibleAnnotations:
+      0: #76(#77=[s#78])
+    MethodParameters:
+      Name                           Flags
+      model
+
+  public java.lang.String processCreationForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.validation.BindingResult);
+    descriptor: (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=4, args_size=3
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore_3
+        14: aload_3
+        15: bipush        25
+        17: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        20: aload_2
+        21: invokeinterface #12,  1           // InterfaceMethod org/springframework/validation/BindingResult.hasErrors:()Z
+        26: ifeq          37
+        29: ldc           #11                 // String owners/createOrUpdateOwnerForm
+        31: aload_3
+        32: iconst_4
+        33: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        36: areturn
+        37: aload_0
+        38: getfield      #2                  // Field owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+        41: aload_1
+        42: invokeinterface #13,  2           // InterfaceMethod org/springframework/samples/petclinic/owner/OwnerRepository.save:(Lorg/springframework/samples/petclinic/owner/Owner;)V
+        47: aload_3
+        48: iconst_5
+        49: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        52: new           #14                 // class java/lang/StringBuilder
+        55: dup
+        56: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+        59: ldc           #16                 // String redirect:/owners/
+        61: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        64: aload_1
+        65: invokevirtual #18                 // Method org/springframework/samples/petclinic/owner/Owner.getId:()Ljava/lang/Integer;
+        68: invokevirtual #19                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+        71: invokevirtual #20                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        74: aload_3
+        75: bipush        6
+        77: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        80: areturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 37
+          locals = [ class java/util/BitSet ]
+      LineNumberTable:
+        line 63: 20
+        line 64: 29
+        line 66: 37
+        line 67: 52
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           20      61     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           20      61     1 owner   Lorg/springframework/samples/petclinic/owner/Owner;
+           20      61     2 result   Lorg/springframework/validation/BindingResult;
+    RuntimeVisibleAnnotations:
+      0: #84(#77=[s#78])
+    RuntimeVisibleTypeAnnotations:
+      0: #86(): METHOD_FORMAL_PARAMETER, param_index=0
+    RuntimeVisibleParameterAnnotations:
+      parameter 0:
+        0: #86()
+      parameter 1:
+    MethodParameters:
+      Name                           Flags
+      owner
+      result
+
+  public java.lang.String initFindForm(java.util.Map<java.lang.String, java.lang.Object>);
+    descriptor: (Ljava/util/Map;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=7, locals=3, args_size=2
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore_2
+        14: aload_2
+        15: bipush        25
+        17: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        20: aload_1
+        21: ldc           #8                  // String owner
+        23: new           #6                  // class org/springframework/samples/petclinic/owner/Owner
+        26: dup
+        27: invokespecial #7                  // Method org/springframework/samples/petclinic/owner/Owner."<init>":()V
+        30: invokeinterface #9,  3            // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+        35: pop
+        36: ldc           #21                 // String owners/findOwners
+        38: aload_2
+        39: bipush        7
+        41: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        44: areturn
+      LineNumberTable:
+        line 73: 20
+        line 74: 36
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           20      25     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           20      25     1 model   Ljava/util/Map;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+           20      25     1 model   Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;
+    Signature: #75                          // (Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;)Ljava/lang/String;
+    RuntimeVisibleAnnotations:
+      0: #76(#77=[s#89])
+    MethodParameters:
+      Name                           Flags
+      model
+
+  public java.lang.String processFindForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.validation.BindingResult, java.util.Map<java.lang.String, java.lang.Object>);
+    descriptor: (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;Ljava/util/Map;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=7, locals=6, args_size=4
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore        4
+        15: aload         4
+        17: bipush        25
+        19: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        22: aload_1
+        23: invokevirtual #22                 // Method org/springframework/samples/petclinic/owner/Owner.getLastName:()Ljava/lang/String;
+        26: ifnull        39
+        29: aload         4
+        31: bipush        8
+        33: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        36: goto          59
+        39: aload         4
+        41: bipush        9
+        43: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        46: aload_1
+        47: ldc           #23                 // String
+        49: invokevirtual #24                 // Method org/springframework/samples/petclinic/owner/Owner.setLastName:(Ljava/lang/String;)V
+        52: aload         4
+        54: bipush        10
+        56: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        59: aload_0
+        60: getfield      #2                  // Field owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+        63: aload_1
+        64: invokevirtual #22                 // Method org/springframework/samples/petclinic/owner/Owner.getLastName:()Ljava/lang/String;
+        67: invokeinterface #25,  2           // InterfaceMethod org/springframework/samples/petclinic/owner/OwnerRepository.findByLastName:(Ljava/lang/String;)Ljava/util/Collection;
+        72: astore        5
+        74: aload         4
+        76: bipush        11
+        78: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        81: aload         5
+        83: invokeinterface #26,  1           // InterfaceMethod java/util/Collection.isEmpty:()Z
+        88: ifeq          120
+        91: aload         4
+        93: bipush        12
+        95: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        98: aload_2
+        99: ldc           #27                 // String lastName
+       101: ldc           #28                 // String notFound
+       103: ldc           #29                 // String not found
+       105: invokeinterface #30,  4           // InterfaceMethod org/springframework/validation/BindingResult.rejectValue:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+       110: ldc           #21                 // String owners/findOwners
+       112: aload         4
+       114: bipush        13
+       116: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+       119: areturn
+       120: aload         5
+       122: invokeinterface #31,  1           // InterfaceMethod java/util/Collection.size:()I
+       127: iconst_1
+       128: if_icmpne     191
+       131: aload         4
+       133: bipush        14
+       135: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+       138: aload         5
+       140: invokeinterface #32,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+       145: invokeinterface #33,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+       150: checkcast     #6                  // class org/springframework/samples/petclinic/owner/Owner
+       153: astore_1
+       154: aload         4
+       156: bipush        15
+       158: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+       161: new           #14                 // class java/lang/StringBuilder
+       164: dup
+       165: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+       168: ldc           #16                 // String redirect:/owners/
+       170: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       173: aload_1
+       174: invokevirtual #18                 // Method org/springframework/samples/petclinic/owner/Owner.getId:()Ljava/lang/Integer;
+       177: invokevirtual #19                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+       180: invokevirtual #20                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+       183: aload         4
+       185: bipush        16
+       187: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+       190: areturn
+       191: aload_3
+       192: ldc           #34                 // String selections
+       194: aload         5
+       196: invokeinterface #9,  3            // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       201: pop
+       202: ldc           #35                 // String owners/ownersList
+       204: aload         4
+       206: bipush        17
+       208: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+       211: areturn
+      StackMapTable: number_of_entries = 4
+        frame_type = 252 /* append */
+          offset_delta = 39
+          locals = [ class java/util/BitSet ]
+        frame_type = 19 /* same */
+        frame_type = 252 /* append */
+          offset_delta = 60
+          locals = [ class java/util/Collection ]
+        frame_type = 251 /* same_frame_extended */
+          offset_delta = 70
+      LineNumberTable:
+        line 81: 22
+        line 82: 46
+        line 86: 59
+        line 87: 81
+        line 89: 98
+        line 90: 110
+        line 91: 120
+        line 93: 138
+        line 94: 161
+        line 97: 191
+        line 98: 202
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           22     190     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           22     190     1 owner   Lorg/springframework/samples/petclinic/owner/Owner;
+           22     190     2 result   Lorg/springframework/validation/BindingResult;
+           22     190     3 model   Ljava/util/Map;
+           81     131     5 results   Ljava/util/Collection;
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+           22     190     3 model   Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;
+           81     131     5 results   Ljava/util/Collection<Lorg/springframework/samples/petclinic/owner/Owner;>;
+    Signature: #96                          // (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;Ljava/util/Map<Ljava/lang/String;Ljava/lang/Object;>;)Ljava/lang/String;
+    RuntimeVisibleAnnotations:
+      0: #76(#77=[s#97])
+    MethodParameters:
+      Name                           Flags
+      owner
+      result
+      model
+
+  public java.lang.String initUpdateOwnerForm(int, org.springframework.ui.Model);
+    descriptor: (ILorg/springframework/ui/Model;)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=5, args_size=3
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore_3
+        14: aload_3
+        15: bipush        25
+        17: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        20: aload_0
+        21: getfield      #2                  // Field owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+        24: iload_1
+        25: invokestatic  #36                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        28: invokeinterface #37,  2           // InterfaceMethod org/springframework/samples/petclinic/owner/OwnerRepository.findById:(Ljava/lang/Integer;)Lorg/springframework/samples/petclinic/owner/Owner;
+        33: astore        4
+        35: aload_3
+        36: bipush        18
+        38: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        41: aload_2
+        42: aload         4
+        44: invokeinterface #38,  2           // InterfaceMethod org/springframework/ui/Model.addAttribute:(Ljava/lang/Object;)Lorg/springframework/ui/Model;
+        49: pop
+        50: ldc           #11                 // String owners/createOrUpdateOwnerForm
+        52: aload_3
+        53: bipush        19
+        55: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        58: areturn
+      LineNumberTable:
+        line 104: 20
+        line 105: 41
+        line 106: 50
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           20      39     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           20      39     1 ownerId   I
+           20      39     2 model   Lorg/springframework/ui/Model;
+           41      18     4 owner   Lorg/springframework/samples/petclinic/owner/Owner;
+    RuntimeVisibleAnnotations:
+      0: #76(#77=[s#103])
+    RuntimeVisibleParameterAnnotations:
+      parameter 0:
+        0: #104(#77=s#100)
+      parameter 1:
+    MethodParameters:
+      Name                           Flags
+      ownerId
+      model
+
+  public java.lang.String processUpdateOwnerForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.validation.BindingResult, int);
+    descriptor: (Lorg/springframework/samples/petclinic/owner/Owner;Lorg/springframework/validation/BindingResult;I)Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=5, locals=5, args_size=4
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore        4
+        15: aload         4
+        17: bipush        25
+        19: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        22: aload_2
+        23: invokeinterface #12,  1           // InterfaceMethod org/springframework/validation/BindingResult.hasErrors:()Z
+        28: ifeq          41
+        31: ldc           #11                 // String owners/createOrUpdateOwnerForm
+        33: aload         4
+        35: bipush        20
+        37: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        40: areturn
+        41: aload_1
+        42: iload_3
+        43: invokestatic  #36                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        46: invokevirtual #39                 // Method org/springframework/samples/petclinic/owner/Owner.setId:(Ljava/lang/Integer;)V
+        49: aload         4
+        51: bipush        21
+        53: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        56: aload_0
+        57: getfield      #2                  // Field owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+        60: aload_1
+        61: invokeinterface #13,  2           // InterfaceMethod org/springframework/samples/petclinic/owner/OwnerRepository.save:(Lorg/springframework/samples/petclinic/owner/Owner;)V
+        66: ldc           #40                 // String redirect:/owners/{ownerId}
+        68: aload         4
+        70: bipush        22
+        72: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        75: areturn
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 41
+          locals = [ class java/util/BitSet ]
+      LineNumberTable:
+        line 111: 22
+        line 112: 31
+        line 114: 41
+        line 115: 56
+        line 116: 66
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           22      54     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           22      54     1 owner   Lorg/springframework/samples/petclinic/owner/Owner;
+           22      54     2 result   Lorg/springframework/validation/BindingResult;
+           22      54     3 ownerId   I
+    RuntimeVisibleAnnotations:
+      0: #84(#77=[s#103])
+    RuntimeVisibleTypeAnnotations:
+      0: #86(): METHOD_FORMAL_PARAMETER, param_index=0
+    RuntimeVisibleParameterAnnotations:
+      parameter 0:
+        0: #86()
+      parameter 1:
+      parameter 2:
+        0: #104(#77=s#100)
+    MethodParameters:
+      Name                           Flags
+      owner
+      result
+      ownerId
+
+  public org.springframework.web.servlet.ModelAndView showOwner(int);
+    descriptor: (I)Lorg/springframework/web/servlet/ModelAndView;
+    flags: ACC_PUBLIC
+    Code:
+      stack=6, locals=4, args_size=2
+         0: getstatic     #218                // Field com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.INSTANCE:Lcom/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider;
+         3: ldc2_w        #219                // long 6861585370234076436l
+         6: ldc           #222                // String org.springframework.samples.petclinic.owner.OwnerController
+         8: ldc           #223                // int 26
+        10: invokevirtual #227                // Method com/epam/drill/plugins/test2code/InstrumentationForTest$TestProbeArrayProvider.invoke:(JLjava/lang/String;I)Ljava/util/BitSet;
+        13: astore_2
+        14: aload_2
+        15: bipush        25
+        17: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        20: new           #41                 // class org/springframework/web/servlet/ModelAndView
+        23: dup
+        24: ldc           #42                 // String owners/ownerDetails
+        26: invokespecial #43                 // Method org/springframework/web/servlet/ModelAndView."<init>":(Ljava/lang/String;)V
+        29: astore_3
+        30: aload_2
+        31: bipush        23
+        33: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        36: aload_3
+        37: aload_0
+        38: getfield      #2                  // Field owners:Lorg/springframework/samples/petclinic/owner/OwnerRepository;
+        41: iload_1
+        42: invokestatic  #36                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+        45: invokeinterface #37,  2           // InterfaceMethod org/springframework/samples/petclinic/owner/OwnerRepository.findById:(Ljava/lang/Integer;)Lorg/springframework/samples/petclinic/owner/Owner;
+        50: invokevirtual #44                 // Method org/springframework/web/servlet/ModelAndView.addObject:(Ljava/lang/Object;)Lorg/springframework/web/servlet/ModelAndView;
+        53: pop
+        54: aload_3
+        55: aload_2
+        56: bipush        24
+        58: invokevirtual #233                // Method java/util/BitSet.set:(I)V
+        61: areturn
+      LineNumberTable:
+        line 128: 20
+        line 129: 36
+        line 130: 54
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           20      42     0  this   Lorg/springframework/samples/petclinic/owner/OwnerController;
+           20      42     1 ownerId   I
+           36      26     3   mav   Lorg/springframework/web/servlet/ModelAndView;
+    RuntimeVisibleAnnotations:
+      0: #76(#77=[s#111])
+    RuntimeVisibleParameterAnnotations:
+      parameter 0:
+        0: #104(#77=s#100)
+    MethodParameters:
+      Name                           Flags
+      ownerId
+}
+SourceFile: "OwnerController.java"
+RuntimeVisibleAnnotations:
+  0: #114()

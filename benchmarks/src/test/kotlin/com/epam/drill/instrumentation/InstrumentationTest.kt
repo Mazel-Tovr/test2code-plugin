@@ -25,27 +25,27 @@ class InstrumentationTest {
 
     @Test
     fun `instrumented class should be larger the the original`() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class, bytes)
+        val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
         val instrumentedBytes = instrumentation.instrumentClass()
         assertTrue { instrumentedBytes.count() > instrumentation.originalBytes.count() }
     }
 
     @Test
     fun `should instrumented without coverage`() {
-        val counter = InstrumentationForTest(InvokeBigConditions::class, bytes).collectCoverage(false)
+        val counter = InstrumentationForTest(InvokeBigConditions::class.java).collectCoverage(false)
         assertEquals(0, counter?.coveredCount)
     }
 
     @Test
     fun `should instrumented with coverage`() {
-        val counter = InstrumentationForTest(InvokeBigConditions::class, bytes).collectCoverage()
+        val counter = InstrumentationForTest(InvokeBigConditions::class.java).collectCoverage()
         assertTrue { counter?.coveredCount!! > 2_000 }
         assertTrue { counter?.missedCount!! < 500 }
     }
 
     @Test
     fun `should instrumented with coverage for cycles`() {
-        InstrumentationForTest(InvokeCycles::class, bytes).collectCoverage()
+        InstrumentationForTest(InvokeCycles::class.java).collectCoverage()
     }
 
 }

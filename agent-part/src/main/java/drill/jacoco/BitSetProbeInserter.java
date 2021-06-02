@@ -12,6 +12,7 @@
  *******************************************************************************/
 package drill.jacoco;
 
+import com.epam.drill.plugins.test2code.*;
 import org.jacoco.core.internal.instr.*;
 import org.objectweb.asm.*;
 
@@ -43,6 +44,8 @@ public class BitSetProbeInserter extends MethodVisitor {
      */
     private int accessorStackSize;
 
+    public String uuid;
+
     /**
      * Creates a new {@link BitSetProbeInserter}.
      *
@@ -60,6 +63,7 @@ public class BitSetProbeInserter extends MethodVisitor {
 //		this.clinit = InstrSupport.CLINIT_NAME.equals(name);
         this.clinit = "<clinit>".equals(name);
         this.arrayStrategy = arrayStrategy;
+        this.uuid = name + desc;
         int pos = (Opcodes.ACC_STATIC & access) == 0 ? 1 : 0;
         for (final Type t : Type.getArgumentTypes(desc)) {
             pos += t.getSize();
@@ -72,7 +76,6 @@ public class BitSetProbeInserter extends MethodVisitor {
         // to true.
 
         mv.visitVarInsn(Opcodes.ALOAD, variable);
-
         // Stack[0]: $PROBE_IMPL
 
         InstrSupport.push(mv, id);
@@ -89,17 +92,21 @@ public class BitSetProbeInserter extends MethodVisitor {
     }
 
     /**
-     *         visitVarInsn(Opcodes.ALOAD, variable)
-     *         InstrSupport.push(this, probeCount)
-     *         visitMethodInsn(
-     *             Opcodes.INVOKEVIRTUAL, PROBE_IMPL, "set", "(I)V",
-     *             false
-     *         )
+     * visitVarInsn(Opcodes.ALOAD, variable)
+     * InstrSupport.push(this, probeCount)
+     * visitMethodInsn(
+     * Opcodes.INVOKEVIRTUAL, PROBE_IMPL, "set", "(I)V",
+     * false
+     * )
      */
 
     @Override
     public void visitCode() {
-        accessorStackSize = arrayStrategy.storeInstance(mv, clinit, variable);
+        if ((arrayStrategy instanceof DrillProbeStrategy)) {
+            accessorStackSize = ((DrillProbeStrategy) arrayStrategy).storeInstanceNewVersion(mv, clinit, variable, uuid);
+        } else {
+            accessorStackSize = arrayStrategy.storeInstance(mv, clinit, variable); //IGNORE PLS
+        }
         mv.visitCode();
     }
 
