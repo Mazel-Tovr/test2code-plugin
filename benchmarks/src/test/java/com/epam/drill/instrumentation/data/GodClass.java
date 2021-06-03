@@ -38,6 +38,7 @@ public class GodClass implements Runnable {
 
         int sum = 0;
 
+
         for (int arg : args) {
             sum += arg;
         }
@@ -49,16 +50,16 @@ public class GodClass implements Runnable {
         int initialValue = value;
         int someValue = 10000;
 
-        while (value != 1000) {
+        while (value != 100) {
             value++;
         }
 
-        for (int i = 100; i > 0; i--) {
+        for (int i = 10; i > 0; i--) {
             value--;
         }
 
-        for (int i = 0; i < 2340; i++) {
-            for (int j = 0; j < 14564; j++) {
+        for (int i = 0; i < 230; i++) {
+            for (int j = 0; j < 144; j++) {
                 value++;
                 covered("31", j);
                 while (value != 0) {

@@ -20,13 +20,14 @@ import com.epam.drill.plugins.test2code.common.api.*
 import kotlinx.atomicfu.*
 import kotlinx.collections.immutable.*
 import kotlinx.coroutines.*
+import java.util.*
 import kotlin.coroutines.*
 
 /**
  * Provides boolean array for the probe.
  * Implementations must be kotlin singleton objects.
  */
-typealias ProbeArrayProvider = (ClassId, ClassName, Int, Int, Int) -> Probes
+typealias ProbeArrayProvider = (ClassId, ClassName, Int, Int, Int) -> BitSet
 
 typealias RealtimeHandler = (Sequence<ExecDatum>) -> Unit
 
@@ -102,7 +103,7 @@ private val probesStub = ProbesStub()
  */
 class ExecRuntime(
     realtimeHandler: RealtimeHandler,
-) : (ClassId, ClassName, Int, String, Int, Int) -> Probes {
+) : (ClassId, ClassName, Int, String, Int, Int) -> BitSet {
 
     fun collect(): Sequence<ExecDatum> = _execData.getAndUpdate { it.clear() }.values.asSequence().run {
         flatMap { map -> map.values.map { it.second }.asSequence() }
@@ -125,7 +126,7 @@ class ExecRuntime(
         testName: TestName,
         start: Int,
         end: Int,
-    ): Probes {
+    ): BitSet {
         val key = key(start, end)
         return _execData.updateAndGet { tests ->
             (tests[testName] ?: persistentHashMapOf()).let { execData ->
@@ -205,7 +206,7 @@ open class SimpleSessionProbeArrayProvider(
         probeCount: Int,
         start: Int,
         end: Int,
-    ): Probes = _context.value?.let {
+    ): BitSet = _context.value?.let {
         it(id, name, probeCount, start, end)
     } ?: _globalContext.value?.let {
         it(id, name, probeCount, start, end)
@@ -217,7 +218,7 @@ open class SimpleSessionProbeArrayProvider(
         probeCount: Int,
         start: Int,
         end: Int,
-    ): Probes? = run {
+    ): BitSet? = run {
         val sessionId = this()
         runtimes[sessionId]?.let { sessionRuntime: ExecRuntime ->
             val testName = this[DRIlL_TEST_NAME] ?: "unspecified"

@@ -25,6 +25,7 @@ val kodeinVersion: String by extra
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":bit-set"))
     testCompileOnly(project(":api"))
     testCompileOnly(project(":agent-api"))
     testImplementation(project(":admin-part"))

@@ -11,5 +11,11 @@ kotlin {
         }
     }
 
-    jvm()
+    jvm() {
+        compilations["main"].defaultSourceSet {
+            dependencies {
+                implementation(project(":bit-set"))
+            }
+        }
+    }
 }

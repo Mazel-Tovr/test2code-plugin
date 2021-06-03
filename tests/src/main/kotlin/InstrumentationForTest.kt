@@ -75,11 +75,20 @@ class InstrumentationForTest(kClass: Class<*>, bytes: ByteArray? = null) {
         @Suppress("DEPRECATION")
         val runnable = clazz.newInstance() as Runnable
         runnable.run()
-        runnable.run()
-        runnable.run()
+//        runnable.run()
+//        runnable.run()
     }
 
     private val _runtimeData = atomic(persistentListOf<ExecDatum>())
+
+    fun aa(isInvokedRunnable: Boolean = true) {
+        TestProbeArrayProvider.start(sessionId, false)
+        if (isInvokedRunnable) {
+            @Suppress("DEPRECATION")
+            val runnable = instrumentedClass.newInstance() as Runnable
+            runnable.run()
+        }
+    }
 
     fun collectCoverage(isInvokedRunnable: Boolean = true): ICounter? {
         TestProbeArrayProvider.start(sessionId, false)

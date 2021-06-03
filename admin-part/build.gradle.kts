@@ -24,6 +24,7 @@ dependencies {
     jarDeps(project(":agent-api"))
     jarDeps("org.jacoco:org.jacoco.core")
     jarDeps("org.apache.bcel:bcel")
+    jarDeps(project(":bit-set"))
 
     //provided by drill runtime
     implementation("com.epam.drill:drill-admin-part")

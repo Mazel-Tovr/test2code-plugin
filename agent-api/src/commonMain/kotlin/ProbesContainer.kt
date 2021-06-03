@@ -41,22 +41,18 @@ fun Probes.toList(): List<Boolean> {
 }
 
 fun BooleanArray.toBitSet(): Probes {
-    val finalSize = size + 1
-    return Probes(finalSize).apply {
+    return Probes(size).apply {
         forEachIndexed { index, b ->
             set(index, b)
         }
-        set(size, true) // bitset magic
     }
 }
 
 fun List<Boolean>.toBitSet(): Probes {
-    val finalSize = size + 1
-    return Probes(finalSize).apply {
+    return Probes(size).apply {
         forEachIndexed { index, b ->
             set(index, b)
         }
-        set(size, true) // bitset magic
     }
 }
 

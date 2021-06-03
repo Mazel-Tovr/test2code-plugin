@@ -33,6 +33,7 @@ dependencies {
     implementation(project(":agent-api"))
     implementation(project(":admin-part"))
     implementation(project(":agent-part"))
+    implementation(project(":bit-set"))
 
     implementation("com.epam.drill:common")
     implementation("com.epam.drill:drill-agent-part")

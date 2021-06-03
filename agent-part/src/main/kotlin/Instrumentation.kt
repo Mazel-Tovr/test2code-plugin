@@ -107,7 +107,7 @@ internal class DrillProbeStrategy(
         val probeOnCurrentMethod = methodToProbe[methodId] ?: throw RuntimeException("CHELL Tbl... code y tebya govono koroche offai naxyi")
         visitLdcInsn(classId)
         visitLdcInsn(className)
-        visitLdcInsn(totalProbes  + 1)//bitset magic
+        visitLdcInsn(totalProbes)
         visitLdcInsn(probeOnCurrentMethod.first)
         visitLdcInsn(probeOnCurrentMethod.second)
         visitMethodInsn(
@@ -115,7 +115,7 @@ internal class DrillProbeStrategy(
             false
         )
         visitVarInsn(Opcodes.ASTORE, variable)
-        mv.setTrueToLastIndex(variable,totalProbes)//bitset magic
+
         7 //stack size  TODO What does it mean
     }
 
@@ -124,14 +124,6 @@ internal class DrillProbeStrategy(
         5
     }
 
-    private fun MethodVisitor.setTrueToLastIndex(variable: Int, probeOnCurrentMethod: Int) {
-        visitVarInsn(Opcodes.ALOAD, variable)
-        InstrSupport.push(this, probeOnCurrentMethod)
-        visitMethodInsn(
-            Opcodes.INVOKEVIRTUAL, PROBE_IMPL, "set", "(I)V",
-            false
-        )
-    }
 
     override fun addMembers(cv: ClassVisitor?, probeCount: Int) {}
 }

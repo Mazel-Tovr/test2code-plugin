@@ -53,16 +53,19 @@ class CoverageBenchmark {
     val instrumentation = InstrumentationForTest(GodClass::class.java)
 
     @Benchmark
-    @BenchmarkMode(Mode.SampleTime)
+    @BenchmarkMode(Mode.Throughput)
+    @Threads(1)
     fun conditionsWithoutInstrumentation() {
         instrumentation.runNonInstrumentedClass()
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.SampleTime)
+    @BenchmarkMode(Mode.Throughput)
+    @Threads(1)
     fun conditionsWithInstrumentation() {
         // val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
-        instrumentation.runClass()
+      //  instrumentation.runClass()
+        instrumentation.aa()
     }
 
 //    @Benchmark

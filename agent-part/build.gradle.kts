@@ -16,6 +16,8 @@ dependencies {
     jarDeps(project(":agent-api"))
     jarDeps("org.jacoco:org.jacoco.core")
     jarDeps("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm") { isTransitive = false }
+    jarDeps(project(":bit-set"))
+
 
     implementation(kotlin("stdlib"))
 
