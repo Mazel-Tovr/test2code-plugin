@@ -26,7 +26,7 @@ import java.util.concurrent.*
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-//@Measurement(iterations = 15, timeUnit = TimeUnit.MILLISECONDS)
+@Measurement(iterations = 15, timeUnit = TimeUnit.MILLISECONDS)
 class CoverageBenchmark {
 
 //    @Benchmark
@@ -42,7 +42,7 @@ class CoverageBenchmark {
 //        val instrumentation = InstrumentationForTest(InvokeCycles::class.java)
 //        instrumentation.runClass()
 //    }
-
+//
 //    @Benchmark
 //    @BenchmarkMode(Mode.AverageTime)
 //    fun cyclesWithCollectCoverage() {
@@ -50,16 +50,16 @@ class CoverageBenchmark {
 //        instrumentation.collectCoverage()
 //    }
 
-    val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
+    val instrumentation = InstrumentationForTest(GodClass::class.java)
 
     @Benchmark
-    @Threads(Threads.MAX)
+    @BenchmarkMode(Mode.SampleTime)
     fun conditionsWithoutInstrumentation() {
         instrumentation.runNonInstrumentedClass()
     }
 
     @Benchmark
-    @Threads(Threads.MAX)
+    @BenchmarkMode(Mode.SampleTime)
     fun conditionsWithInstrumentation() {
         // val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
         instrumentation.runClass()
@@ -68,7 +68,7 @@ class CoverageBenchmark {
 //    @Benchmark
 //    @BenchmarkMode(Mode.AverageTime)
 //    fun conditionsWithCollectCoverage() {
-//        val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
+//       // val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
 //        instrumentation.collectCoverage()
 //    }
 

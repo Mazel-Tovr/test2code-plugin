@@ -76,6 +76,7 @@ class InstrumentationForTest(kClass: Class<*>, bytes: ByteArray? = null) {
         val runnable = clazz.newInstance() as Runnable
         runnable.run()
         runnable.run()
+        runnable.run()
     }
 
     private val _runtimeData = atomic(persistentListOf<ExecDatum>())
