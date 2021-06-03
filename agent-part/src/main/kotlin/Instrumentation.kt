@@ -60,7 +60,7 @@ private class CustomInstrumenter(
             probeArrayProvider,
             className,
             classId,
-            drillClassProbesAdapter.methodProbes,
+            drillClassProbesAdapter.methodToProbes,
             counter.count
         )
         val writer = object : ClassWriter(reader, 0) {
@@ -96,7 +96,7 @@ internal class DrillProbeStrategy(
     private val probeArrayProvider: ProbeArrayProvider,
     private val className: String,
     private val classId: Long,
-    private val methodToProbe: Map<String, Int>,
+    private val methodToProbe: Map<String, Pair<Int,Int>>,
     private val totalProbes: Int,
 ) : IProbeArrayStrategy {
 
@@ -107,15 +107,16 @@ internal class DrillProbeStrategy(
         val probeOnCurrentMethod = methodToProbe[methodId] ?: throw RuntimeException("CHELL Tbl... code y tebya govono koroche offai naxyi")
         visitLdcInsn(classId)
         visitLdcInsn(className)
-        visitLdcInsn(probeOnCurrentMethod  + 1)//bitset magic
-        visitLdcInsn(methodId)
+        visitLdcInsn(totalProbes  + 1)//bitset magic
+        visitLdcInsn(probeOnCurrentMethod.first)
+        visitLdcInsn(probeOnCurrentMethod.second)
         visitMethodInsn(
-            Opcodes.INVOKEVIRTUAL, drillClassName, "invoke", "(JLjava/lang/String;ILjava/lang/String;)L$PROBE_IMPL;",
+            Opcodes.INVOKEVIRTUAL, drillClassName, "invoke", "(JLjava/lang/String;III)L$PROBE_IMPL;",
             false
         )
         visitVarInsn(Opcodes.ASTORE, variable)
-        mv.setTrueToLastIndex(variable,probeOnCurrentMethod)//bitset magic
-        6 //stack size  TODO What does it mean
+        mv.setTrueToLastIndex(variable,totalProbes)//bitset magic
+        7 //stack size  TODO What does it mean
     }
 
     override fun storeInstance(mv: MethodVisitor?, clinit: Boolean, variable: Int): Int = mv!!.run {

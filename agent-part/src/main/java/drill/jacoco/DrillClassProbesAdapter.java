@@ -1,5 +1,6 @@
 package drill.jacoco;
 
+import kotlin.*;
 import org.jacoco.core.internal.flow.*;
 import org.jacoco.core.internal.instr.*;
 import org.objectweb.asm.*;
@@ -21,7 +22,7 @@ public class DrillClassProbesAdapter extends ClassVisitor
 
     private String name;
 
-    public HashMap<String, Integer> methodProbes = new HashMap<>();
+    public HashMap<String, Pair<Integer, Integer>> methodToProbes = new HashMap<>();
 
     private String currentMethodUUID;
 
@@ -62,14 +63,13 @@ public class DrillClassProbesAdapter extends ClassVisitor
         }
         return new DrillMethodSanitizer(null, access, name, desc, signature,
                 exceptions) {
-
             @Override
             public void visitEnd() {
                 super.visitEnd();
                 LabelFlowAnalyzer.markLabels(this);
                 DrillClassProbesAdapter.this.currentMethodUUID = this.methodUUID;
-                DrillClassProbesAdapter.this.methodProbes.put(currentMethodUUID, 0);
-                DrillClassProbesAdapter.this.counter = 0;
+                DrillClassProbesAdapter.this.methodToProbes.put(currentMethodUUID, new Pair<>(counter, counter));
+                //DrillClassProbesAdapter.this.counter = 0;
                 final MethodProbesAdapter probesAdapter = new MethodProbesAdapter(
                         methodProbes, DrillClassProbesAdapter.this);
                 if (trackFrames) {
@@ -81,6 +81,8 @@ public class DrillClassProbesAdapter extends ClassVisitor
                 } else {
                     methodProbes.accept(this, probesAdapter);
                 }
+                Pair<Integer, Integer> value = methodToProbes.get(currentMethodUUID);
+                DrillClassProbesAdapter.this.methodToProbes.put(currentMethodUUID, value.copy(value.getFirst(), DrillClassProbesAdapter.this.counter));
             }
         };
     }
@@ -94,7 +96,6 @@ public class DrillClassProbesAdapter extends ClassVisitor
     // === IProbeIdGenerator ===
 
     public int nextId() {
-        methodProbes.put(currentMethodUUID, methodProbes.get(currentMethodUUID) + 1);
         return counter++;
     }
 
