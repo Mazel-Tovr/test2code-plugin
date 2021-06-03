@@ -23,8 +23,10 @@ import java.util.concurrent.*
 
 @State(Scope.Benchmark)
 @Fork(1)
+@BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
-@Measurement(iterations = 15, timeUnit = TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+//@Measurement(iterations = 15, timeUnit = TimeUnit.MILLISECONDS)
 class CoverageBenchmark {
 
 //    @Benchmark
@@ -48,17 +50,18 @@ class CoverageBenchmark {
 //        instrumentation.collectCoverage()
 //    }
 
+    val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
+
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
+    @Threads(Threads.MAX)
     fun conditionsWithoutInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
         instrumentation.runNonInstrumentedClass()
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
+    @Threads(Threads.MAX)
     fun conditionsWithInstrumentation() {
-        val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
+        // val instrumentation = InstrumentationForTest(InvokeBigConditions::class.java)
         instrumentation.runClass()
     }
 
