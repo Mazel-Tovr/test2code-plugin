@@ -64,6 +64,7 @@ class Plugin(
     }
 
     init {
+        System.setProperty("java.rmi.server.hostname", "localhost");
         val registry: Registry = LocateRegistry.createRegistry(2732)
         val stub = UnicastRemoteObject.exportObject(this, 0)
         registry.bind("UNIQUE_BINDING_NAME", stub)

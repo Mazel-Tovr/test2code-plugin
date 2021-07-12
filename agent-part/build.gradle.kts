@@ -19,6 +19,7 @@ dependencies {
     jarDeps("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm") { isTransitive = false }
     jarDeps("com.github.luben:zstd-jni:1.4.8-1")
     jarDeps("org.mapdb:mapdb:$cacheMapDB")
+    jarDeps("org.jetbrains.kotlinx:kotlinx-serialization-json")
 
     implementation(kotlin("stdlib"))
 

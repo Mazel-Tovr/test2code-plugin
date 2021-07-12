@@ -95,7 +95,7 @@ class Plugin(
     val method: RMI
 
     init {
-        val registry = LocateRegistry.getRegistry(2732)
+        val registry = LocateRegistry.getRegistry("host.docker.internal",2732)
         method = registry.lookup("UNIQUE_BINDING_NAME") as RMI
     }
     //TODO remove
