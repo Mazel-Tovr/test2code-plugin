@@ -17,7 +17,7 @@ val appJvmArgs = listOf(
     "-XX:+UseG1GC",
     "-XX:+UseStringDeduplication",
     "-Xms128m",
-    "-Xmx2g"
+    "-Xmx8g"
 )
 
 application {
@@ -45,5 +45,6 @@ tasks {
         environment("DRILL_DEVMODE", true)
         environment("DRILL_DEFAULT_PACKAGES", "org/springframework/samples/petclinic")
         environment("DRILL_PLUGINS_REMOTE_ENABLED", false)
+        environment("DRILL_AGENTS_SOCKET_TIMEOUT", "400")
     }
 }

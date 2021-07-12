@@ -354,9 +354,10 @@ class Plugin(
     )
 
     internal suspend fun calculateAndSendBuildCoverage() {
+        val pereScope = state.prevScope.takeIf { it?.enabled == true }
         val scopes = state.scopeManager.run {
             byVersion(buildVersion, withData = true).enabled()
-        }
+        }.filter { it.id != pereScope?.id }.let { if (pereScope != null) it.plusElement(pereScope) else it }
         scopes.calculateAndSendBuildCoverage(state.coverContext())
     }
 
@@ -604,7 +605,9 @@ class Plugin(
                             send(buildVersion, Routes.Build.Scopes.Scope.MethodsCoveredByTest.All(test), all)
                             send(buildVersion, Routes.Build.Scopes.Scope.MethodsCoveredByTest.Modified(test), modified)
                             send(buildVersion, Routes.Build.Scopes.Scope.MethodsCoveredByTest.New(test), new)
-                            send(buildVersion, Routes.Build.Scopes.Scope.MethodsCoveredByTest.Unaffected(test), unaffected)
+                            send(buildVersion,
+                                Routes.Build.Scopes.Scope.MethodsCoveredByTest.Unaffected(test),
+                                unaffected)
                         }
                     } ?: run {
                         Routes.Build.MethodsCoveredByTest(typedTest.id(), Routes.Build()).let { test ->
